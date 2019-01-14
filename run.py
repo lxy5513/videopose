@@ -27,6 +27,7 @@ from common.utils import deterministic_random
 args = parse_args()
 print(args)
 
+#  import ipdb;ipdb.set_trace()
 try:
     # Create checkpoint directory if it does not exist
     os.makedirs(args.checkpoint)
@@ -63,7 +64,6 @@ for subject in dataset.subjects():
 
 print('Loading 2D detections...')
 keypoints = np.load('data/data_2d_' + args.dataset + '_' + args.keypoints + '.npz')
-#  import ipdb;ipdb.set_trace()
 keypoints_symmetry = keypoints['metadata'].item()['keypoints_symmetry']
 kps_left, kps_right = list(keypoints_symmetry[0]), list(keypoints_symmetry[1])
 joints_left, joints_right = list(dataset.skeleton().joints_left()), list(dataset.skeleton().joints_right())
@@ -79,7 +79,8 @@ for subject in dataset.subjects():
             mocap_length = dataset[subject][action]['positions_3d'][cam_idx].shape[0]
 
             ########### lxy ++
-            mocap_length=167
+            #  import ipdb; ipdb.set_trace()
+            mocap_length=keypoints[subject][action][cam_idx].shape[0]
             if cam_idx>=1:
                 continue
 
@@ -167,6 +168,7 @@ action_filter = None if args.actions == '*' else args.actions.split(',')
 if action_filter is not None:
     print('Selected actions:', action_filter)
 
+import ipdb; ipdb.set_trace()
 cameras_valid, poses_valid, poses_valid_2d = fetch(subjects_test, action_filter)
 
 filter_widths = [int(x) for x in args.architecture.split(',')]
@@ -198,16 +200,17 @@ for parameter in model_pos.parameters():
     model_params += parameter.numel()
 print('INFO: Trainable parameter count:', model_params)
 
+import ipdb; ipdb.set_trace()
 if torch.cuda.is_available():
     model_pos = model_pos.cuda()
-    model_pos_train = model_pos_train.cuda()
+    #  model_pos_train = model_pos_train.cuda()
 
 if args.resume or args.evaluate:
     chk_filename = os.path.join(args.checkpoint, args.resume if args.resume else args.evaluate)
     print('Loading checkpoint', chk_filename)
     checkpoint = torch.load(chk_filename, map_location=lambda storage, loc: storage)# 把loc映射到storage
     print('This model was trained for {} epochs'.format(checkpoint['epoch']))
-    model_pos_train.load_state_dict(checkpoint['model_pos'])
+    #  model_pos_train.load_state_dict(checkpoint['model_pos'])
     model_pos.load_state_dict(checkpoint['model_pos'])
 
 test_generator = UnchunkedGenerator(cameras_valid, poses_valid, poses_valid_2d,
@@ -705,7 +708,7 @@ def evaluate(test_generator, action=None, return_predictions=False):
 
 if args.render:
     print('Rendering...')
-
+    #  import ipdb; ipdb.set_trace()
     input_keypoints = keypoints[args.viz_subject][args.viz_action][args.viz_camera].copy()
     if args.viz_subject in dataset.subjects() and args.viz_action in dataset[args.viz_subject] and 0:
     #  if args.viz_subject in dataset.subjects() and args.viz_action in dataset[args.viz_subject]:

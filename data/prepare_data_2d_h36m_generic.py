@@ -65,8 +65,28 @@ if __name__ == '__main__':
     output['S1']['Walking'] = [None, None, None, None]
     output['S1']['Walking'][0] = keypoints.astype(np.float32)
     np.savez_compressed(output_prefix_2d + '00' + args.output, positions_2d=output, metadata=metadata)
+    data = np.load('data_2d_h36m_cpn_ft_h36m_dbb.npz')
+    data1 = np.load('data_2d_h36m_00detectron_pt_coco.npz')
+    actions = data['positions_2d'].item()
+    actions1 = data1['positions_2d'].item()
+    meta = data['metadata']
 
+    actions['S1']['Walking'][0]=actions1['S1']['Walking'][0][:,:,:]
+    np.savez_compressed('data_2d_h36m_lxy1_cpn_ft_h36m_dbb.npz', positions_2d=actions, metadata=meta)
+
+
+    #  actions['S1']['Walking'][0]=actions1['S1']['Walking'][0][:,:,:2]
+    #  np.savez_compressed('data_2d_h36m_lxy_cpn_ft_h36m_dbb.npz', positions_2d=actions, metadata=meta)
+
+
+
+    os.exit()
     ipdb.set_trace()
+
+
+
+
+
 
     # match all file with the format
     file_list = glob(args.input + '/S*/*.mp4.npz')
