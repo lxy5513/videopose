@@ -74,24 +74,28 @@ def import_detectron_poses(path):
             results.append(results[-1])
             continue
         best_match = np.argmax(bb[i][1][:, 4])
+        #  import ipdb;ipdb.set_trace()
         keypoints = kp[i][1][best_match].T.copy()
         results.append(keypoints)
     results = np.array(results)
-    return results[:, :, 4:6] # Soft-argmax
-    #return results[:, :, [0, 1, 3]] # Argmax + score
-    
-    
+    #  return results[:, :, 4:6] # Soft-argmax
+    return results[:, :, [0, 1, 3]] # Argmax + score
+
+def my_pose(path):
+    data = np.load(path, encoding='latin1')
+
+
 def import_cpn_poses(path):
     data = np.load(path)
     kp = data['keypoints']
     return kp[:, :, :2]
-    
-    
+
+
 def import_sh_poses(path):
     with h5py.File(path) as hf:
         positions = hf['poses'].value
     return positions.astype('float32')
-    
+
 def suggest_pose_importer(name):
     if 'detectron' in name:
         return import_detectron_poses

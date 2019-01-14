@@ -82,6 +82,7 @@ if __name__ == '__main__':
         
         from scipy.io import loadmat
         
+        import ipdb;ipdb.set_trace()
         for subject in subjects:
             output[subject] = {}
             file_list = glob(args.from_source + '/' + subject + '/MyPoseFeatures/D3_Positions/*.cdf.mat')
