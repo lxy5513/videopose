@@ -27,7 +27,7 @@ from common.utils import deterministic_random
 args = parse_args()
 print(args)
 
-#  import ipdb;ipdb.set_trace()
+import ipdb;ipdb.set_trace()
 try:
     # Create checkpoint directory if it does not exist
     os.makedirs(args.checkpoint)
@@ -35,11 +35,12 @@ except OSError as e:
     if e.errno != errno.EEXIST:
         raise RuntimeError('Unable to create checkpoint directory:', args.checkpoint)
 
-print('Loading dataset...')
-dataset_path = 'data/data_3d_' + args.dataset + '.npz'
+print('Loading 3D dataset...')
+dataset_path = 'data/data_3d_' + args.dataset + '.npz' #  dataset 'h36m'
 if args.dataset == 'h36m':
     from common.h36m_dataset import Human36mDataset
     dataset = Human36mDataset(dataset_path)
+
 elif args.dataset.startswith('humaneva'):
     from common.humaneva_dataset import HumanEvaDataset
     dataset = HumanEvaDataset(dataset_path)
@@ -48,7 +49,7 @@ else:
 
 print('Preparing data...')
 '''
-dataset 中包含一系列2D关键点信息，还有摄像信息，是由原video经过2D检测器
+3D dataset 中包含一系列2D关键点信息，还有摄像信息，是由原video经过2D检测器
 处理之后得到的， 通过它的信息，使用3D检查模型，来生成3D姿态。
 '''
 for subject in dataset.subjects():
@@ -62,13 +63,15 @@ for subject in dataset.subjects():
             positions_3d.append(pos_3d)
         anim['positions_3d'] = positions_3d
 
+
 print('Loading 2D detections...')
-keypoints = np.load('data/data_2d_' + args.dataset + '_' + args.keypoints + '.npz')
+keypoints = np.load('data/data_2d_' + args.dataset + '_' + args.keypoints + '.npz') #args.keypoints 就是在terminal中指定的
 keypoints_symmetry = keypoints['metadata'].item()['keypoints_symmetry']
 kps_left, kps_right = list(keypoints_symmetry[0]), list(keypoints_symmetry[1])
 joints_left, joints_right = list(dataset.skeleton().joints_left()), list(dataset.skeleton().joints_right())
 keypoints = keypoints['positions_2d'].item()
 
+# lxy comment
 for subject in dataset.subjects():
     assert subject in keypoints, 'Subject {} is missing from the 2D detections dataset'.format(subject)
     for action in dataset[subject].keys():
@@ -168,7 +171,6 @@ action_filter = None if args.actions == '*' else args.actions.split(',')
 if action_filter is not None:
     print('Selected actions:', action_filter)
 
-import ipdb; ipdb.set_trace()
 cameras_valid, poses_valid, poses_valid_2d = fetch(subjects_test, action_filter)
 
 filter_widths = [int(x) for x in args.architecture.split(',')]
@@ -200,17 +202,17 @@ for parameter in model_pos.parameters():
     model_params += parameter.numel()
 print('INFO: Trainable parameter count:', model_params)
 
-import ipdb; ipdb.set_trace()
+#  import ipdb; ipdb.set_trace()
 if torch.cuda.is_available():
     model_pos = model_pos.cuda()
-    #  model_pos_train = model_pos_train.cuda()
+    model_pos_train = model_pos_train.cuda()
 
 if args.resume or args.evaluate:
     chk_filename = os.path.join(args.checkpoint, args.resume if args.resume else args.evaluate)
     print('Loading checkpoint', chk_filename)
     checkpoint = torch.load(chk_filename, map_location=lambda storage, loc: storage)# 把loc映射到storage
     print('This model was trained for {} epochs'.format(checkpoint['epoch']))
-    #  model_pos_train.load_state_dict(checkpoint['model_pos'])
+    model_pos_train.load_state_dict(checkpoint['model_pos'])
     model_pos.load_state_dict(checkpoint['model_pos'])
 
 test_generator = UnchunkedGenerator(cameras_valid, poses_valid, poses_valid_2d,
@@ -661,6 +663,7 @@ def evaluate(test_generator, action=None, return_predictions=False):
             if test_generator.augment_enabled():
                 # Undo flipping and take average with non-flipped version
                 predicted_3d_pos[1, :, :, 0] *= -1
+                import ipdb; ipdb.set_trace()
                 predicted_3d_pos[1, :, joints_left + joints_right] = predicted_3d_pos[1, :, joints_right + joints_left]
                 predicted_3d_pos = torch.mean(predicted_3d_pos, dim=0, keepdim=True)
 

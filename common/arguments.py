@@ -42,7 +42,7 @@ def parse_args():
                         help='disable train-time flipping')
     parser.add_argument('-no-tta', '--no-test-time-augmentation', dest='test_time_augmentation', action='store_false',
                         help='disable test-time flipping')
-    parser.add_argument('-arc', '--architecture', default='3,3,3', type=str, metavar='LAYERS', help='filter widths separated by comma')
+    parser.add_argument('-arc', '--architecture', default='3,3,3,3,3', type=str, metavar='LAYERS', help='filter widths separated by comma')
     parser.add_argument('--causal', action='store_true', help='use causal convolutions for real-time processing')
     parser.add_argument('-ch', '--channels', default=1024, type=int, metavar='N', help='number of channels in convolution layers')
 
@@ -57,7 +57,7 @@ def parse_args():
     parser.add_argument('--no-bone-length', action='store_false', dest='bone_length_term',
                         help='disable bone length term in semi-supervised settings')
     parser.add_argument('--no-proj', action='store_true', help='disable projection for semi-supervised setting')
-    
+
     # Visualization
     parser.add_argument('--viz-subject', type=str, metavar='STR', help='subject to render')
     parser.add_argument('--viz-action', type=str, metavar='STR', help='action to render')
@@ -70,17 +70,18 @@ def parse_args():
     parser.add_argument('--viz-limit', type=int, default=-1, metavar='N', help='only render first N frames')
     parser.add_argument('--viz-downsample', type=int, default=1, metavar='N', help='downsample FPS by a factor N')
     parser.add_argument('--viz-size', type=int, default=5, metavar='N', help='image size')
-    
+    parser.add_argument('--input_npz', type=str, default='', help='input 2d numpy file')
+
     parser.set_defaults(bone_length_term=True)
     parser.set_defaults(data_augmentation=True)
     parser.set_defaults(test_time_augmentation=True)
-    
+
     args = parser.parse_args()
     # Check invalid configuration
     if args.resume and args.evaluate:
         print('Invalid flags: --resume and --evaluate cannot be set at the same time')
         exit()
-        
+
     if args.export_training_curves and args.no_eval:
         print('Invalid flags: --export-training-curves and --no-eval cannot be set at the same time')
         exit()
