@@ -22,31 +22,29 @@ print(args)
 print('Loading 3D dataset...')
 dataset_path = 'data/data_3d_' + args.dataset + '.npz' #  dataset 'h36m'
 from common.h36m_dataset import Human36mDataset
-dataset = Human36mDataset(dataset_path)
+dataset = Human36mDataset(dataset_path) #'data/data_3d_h36m.npz'
 
 
 # according to output name,generate some format. we use detectron
 from data.data_utils import suggest_metadata, suggest_pose_importer
-import_func = suggest_pose_importer('detectron_pt_coco')
 metadata = suggest_metadata('detectron_pt_coco')
 
 
 print('Loading 2D detections keypoints ...')
-# handle 2d keypoints format
+
 if args.input_npz:
-    file_input = args.input_npz
+    #如果already exist keypoint npz file 
+    npz = np.load(args.input_npz) 
+    keypoints = npz['kpts']
 else:
-    file_input = '../Detectron/lxy-2d-detectron.npz'
-
-# detectron pose for model p-pt-243.bin
-#  keypoints = import_func(file_input)
-
-# alpha pose for modeln-pt-243.bin
-kpts = np.load(file_input)
-keypoints = kpts['kpts']
+    # crate kpts by alphapose
+    from Alphapose.gene_npz import handle_video 
+    video_name = args.viz_video
+    keypoints = handle_video(video_name)
 
 
 # 2 代表 keypoint, 3 代表 keypoint and probability score after softmax
+# 2 fit for cpn-pt-243.bin  //  3 for d-pt-243.bin
 input_num = 2
 keypoints = keypoints[:, :, :input_num]
 
@@ -125,6 +123,7 @@ anim_output = {'Reconstruction': prediction}
 input_keypoints = image_coordinates(input_keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
 # set default fps = 25 dataset.fps()  = 25
+#  import ipdb;ipdb.set_trace()
 
 from common.visualization import render_animation
 render_animation(input_keypoints, anim_output,

@@ -70,6 +70,7 @@ def parse_args():
     parser.add_argument('--viz-limit', type=int, default=-1, metavar='N', help='only render first N frames')
     parser.add_argument('--viz-downsample', type=int, default=1, metavar='N', help='downsample FPS by a factor N')
     parser.add_argument('--viz-size', type=int, default=5, metavar='N', help='image size')
+    # self add
     parser.add_argument('--input_npz', type=str, default='', help='input 2d numpy file')
 
     parser.set_defaults(bone_length_term=True)
