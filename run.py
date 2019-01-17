@@ -71,7 +71,6 @@ kps_left, kps_right = list(keypoints_symmetry[0]), list(keypoints_symmetry[1])
 joints_left, joints_right = list(dataset.skeleton().joints_left()), list(dataset.skeleton().joints_right())
 keypoints = keypoints['positions_2d'].item()
 
-# lxy comment
 for subject in dataset.subjects():
     assert subject in keypoints, 'Subject {} is missing from the 2D detections dataset'.format(subject)
     for action in dataset[subject].keys():
@@ -83,9 +82,9 @@ for subject in dataset.subjects():
 
             ########### lxy ++
             #  import ipdb; ipdb.set_trace()
-            mocap_length=keypoints[subject][action][cam_idx].shape[0]
-            if cam_idx>=1:
-                continue
+            #  mocap_length=keypoints[subject][action][cam_idx].shape[0]
+            #  if cam_idx>=1:
+                #  continue
 
             assert keypoints[subject][action][cam_idx].shape[0] >= mocap_length
 
@@ -202,7 +201,6 @@ for parameter in model_pos.parameters():
     model_params += parameter.numel()
 print('INFO: Trainable parameter count:', model_params)
 
-#  import ipdb; ipdb.set_trace()
 if torch.cuda.is_available():
     model_pos = model_pos.cuda()
     model_pos_train = model_pos_train.cuda()
@@ -267,10 +265,11 @@ if not args.evaluate:
     initial_momentum = 0.1
     final_momentum = 0.001
 
-
+    # use train
     train_generator = ChunkedGenerator(args.batch_size//args.stride, cameras_train, poses_train, poses_train_2d, args.stride,
                                        pad=pad, causal_shift=causal_shift, shuffle=True, augment=args.data_augmentation,
                                        kps_left=kps_left, kps_right=kps_right, joints_left=joints_left, joints_right=joints_right)
+    # use test
     train_generator_eval = UnchunkedGenerator(cameras_train, poses_train, poses_train_2d,
                                               pad=pad, causal_shift=causal_shift, augment=False)
     print('INFO: Training on {} frames'.format(train_generator_eval.num_frames()))
@@ -301,7 +300,7 @@ if not args.evaluate:
     print('** Note: reported losses are averaged over all frames and test-time augmentation is not used here.')
     print('** The final evaluation will be carried out after the last training epoch.')
 
-    # Pos model only
+    # Pose model only
     while epoch < args.epochs:
         start_time = time()
         epoch_loss_3d_train = 0
@@ -390,6 +389,7 @@ if not args.evaluate:
                 optimizer.step()
             losses_traj_train.append(epoch_loss_traj_train / N)
             losses_2d_train_unlabeled.append(epoch_loss_2d_train_unlabeled / N_semi)
+        # supervied learning
         else:
             # Regular supervised scenario
             for _, batch_3d, batch_2d in train_generator.next_epoch():
@@ -452,6 +452,8 @@ if not args.evaluate:
 
                         predicted_traj = model_traj(inputs_2d)
                         loss_traj = mpjpe(predicted_traj, inputs_traj)
+
+                        # 2D MPJPE loss in paper
                         epoch_loss_traj_valid += inputs_traj.shape[0]*inputs_traj.shape[1] * loss_traj.item()
                         assert inputs_traj.shape[0]*inputs_traj.shape[1] == inputs_3d.shape[0]*inputs_3d.shape[1]
 
@@ -459,6 +461,8 @@ if not args.evaluate:
                             target = inputs_2d[:, pad:-pad, :, :2].contiguous()
                         else:
                             target = inputs_2d[:, :, :, :2].contiguous()
+
+                        # 预测的3D pose project to 2D
                         reconstruction = project_to_2d(predicted_3d_pos + predicted_traj, cam)
                         loss_reconstruction = mpjpe(reconstruction, target) # On 2D poses
                         epoch_loss_2d_valid += reconstruction.shape[0]*reconstruction.shape[1] * loss_reconstruction.item()

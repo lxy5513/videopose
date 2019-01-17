@@ -13,6 +13,8 @@ from matplotlib.animation import FuncAnimation, writers
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import subprocess as sp
+import ipdb; pdb=ipdb.set_trace
+
 
 def get_resolution(filename):
     command = ['ffprobe', '-v', 'error', '-select_streams', 'v:0',
@@ -24,14 +26,14 @@ def get_resolution(filename):
 
 def read_video(filename, skip=0, limit=-1):
     w, h = get_resolution(filename)
-    
+
     command = ['ffmpeg',
             '-i', filename,
             '-f', 'image2pipe',
             '-pix_fmt', 'rgb24',
             '-vsync', '0',
             '-vcodec', 'rawvideo', '-']
-    
+
     i = 0
     with sp.Popen(command, stdout = sp.PIPE, bufsize=-1) as pipe:
         while True:
@@ -43,9 +45,9 @@ def read_video(filename, skip=0, limit=-1):
                 yield np.frombuffer(data, dtype='uint8').reshape((h, w, 3))
             if i == limit:
                 break
-                
-                
-    
+
+
+
 def downsample_tensor(X, factor):
     length = X.shape[0]//factor * factor
     return np.mean(X[:length].reshape(-1, factor, *X.shape[1:]), axis=1)
@@ -101,7 +103,7 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
             all_frames.append(f)
         effective_length = min(keypoints.shape[0], len(all_frames))
         all_frames = all_frames[:effective_length]
-    
+
     if downsample > 1:
         keypoints = downsample_tensor(keypoints, downsample)
         all_frames = downsample_tensor(np.array(all_frames), downsample).astype('uint8')
@@ -114,12 +116,13 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
     image = None
     lines = []
     points = None
-    
+
     if limit < 1:
         limit = len(all_frames)
     else:
         limit = min(limit, len(all_frames))
 
+    # array([-1,  0,  1,  2,  0,  4,  5,  0,  7,  8,  9,  8, 11, 12,  8, 14, 15])
     parents = skeleton.parents()
     def update_video(i):
         nonlocal initialized, image, lines, points
@@ -131,18 +134,18 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
         # Update 2D poses
         if not initialized:
             image = ax_in.imshow(all_frames[i], aspect='equal')
-            
+
             for j, j_parent in enumerate(parents):
+                pdb()
                 if j_parent == -1:
                     continue
-                    
+
                 if len(parents) == keypoints.shape[1]:
                     # Draw skeleton only if keypoints match (otherwise we don't have the parents definition)
                     lines.append(ax_in.plot([keypoints[i, j, 0], keypoints[i, j_parent, 0]],
                                             [keypoints[i, j, 1], keypoints[i, j_parent, 1]], color='pink'))
 
-                col = 'red' if j in skeleton.joints_right() else 'black'
-                for n, ax in enumerate(ax_3d):
+                    col = 'red' if j in skeleton.joints_right() else 'black' for n, ax in enumerate(ax_3d):
                     pos = poses[n][i]
                     lines_3d[n].append(ax.plot([pos[j, 0], pos[j_parent, 0]],
                                                [pos[j, 1], pos[j_parent, 1]],
@@ -157,7 +160,7 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
             for j, j_parent in enumerate(parents):
                 if j_parent == -1:
                     continue
-                
+
                 if len(parents) == keypoints.shape[1]:
                     lines[j-1][0].set_data([keypoints[i, j, 0], keypoints[i, j_parent, 0]],
                                            [keypoints[i, j, 1], keypoints[i, j_parent, 1]])
@@ -169,12 +172,12 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
                     lines_3d[n][j-1][0].set_3d_properties([pos[j, 2], pos[j_parent, 2]], zdir='z')
 
             points.set_offsets(keypoints[i])
-        
+
         print('{}/{}      '.format(i, limit), end='\r')
-        
+
 
     fig.tight_layout()
-    
+
     anim = FuncAnimation(fig, update_video, frames=np.arange(0, limit), interval=1000/fps, repeat=False)
     if output.endswith('.mp4'):
         Writer = writers['ffmpeg']

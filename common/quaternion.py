@@ -9,7 +9,7 @@ import torch
 
 def qrot(q, v):
     """
-    Rotate vector(s) v about the rotation described by quaternion(s) q.
+    Rotate vector(s) v about the rotation described by 四元数quaternion(s) q.
     Expects a tensor of shape (*, 4) for q and a tensor of shape (*, 3) for v,
     where * denotes any number of dimensions.
     Returns a tensor of shape (*, 3).
@@ -22,8 +22,8 @@ def qrot(q, v):
     uv = torch.cross(qvec, v, dim=len(q.shape)-1)
     uuv = torch.cross(qvec, uv, dim=len(q.shape)-1)
     return (v + 2 * (q[..., :1] * uv + uuv))
-    
-    
+
+
 def qinverse(q, inplace=False):
     # We assume the quaternion to be normalized
     if inplace:
