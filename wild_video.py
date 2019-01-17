@@ -37,7 +37,19 @@ if args.input_npz:
     file_input = args.input_npz
 else:
     file_input = '../Detectron/lxy-2d-detectron.npz'
-keypoints = import_func(file_input)
+
+# detectron pose for model p-pt-243.bin
+#  keypoints = import_func(file_input)
+
+# alpha pose for modeln-pt-243.bin
+kpts = np.load(file_input)
+keypoints = kpts['kpts']
+
+
+# 2 代表 keypoint, 3 代表 keypoint and probability score after softmax
+input_num = 2
+keypoints = keypoints[:, :, :input_num]
+
 
 keypoints_symmetry = metadata['keypoints_symmetry']
 kps_left, kps_right = list(keypoints_symmetry[0]), list(keypoints_symmetry[1])
@@ -49,7 +61,7 @@ cam = dataset.cameras()['S1'][0]
 keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
 
-model_pos = TemporalModel(17, 3, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
+model_pos = TemporalModel(17, input_num, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
                             dense=args.dense)
 if torch.cuda.is_available():
     model_pos = model_pos.cuda()
@@ -88,6 +100,7 @@ def evaluate(test_generator, action=None, return_predictions=False):
 
 
 print('Rendering...')
+#  import ipdb;ipdb.set_trace()
 input_keypoints = keypoints.copy()
 
 gen = UnchunkedGenerator(None, None, [input_keypoints],
@@ -111,9 +124,11 @@ anim_output = {'Reconstruction': prediction}
 
 input_keypoints = image_coordinates(input_keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
+# set default fps = 25 dataset.fps()  = 25
+
 from common.visualization import render_animation
 render_animation(input_keypoints, anim_output,
-                    dataset.skeleton(), dataset.fps(), args.viz_bitrate, cam['azimuth'], args.viz_output,
+                    dataset.skeleton(), 25, args.viz_bitrate, cam['azimuth'], args.viz_output,
                     limit=args.viz_limit, downsample=args.viz_downsample, size=args.viz_size,
                     input_video_path=args.viz_video, viewport=(cam['res_w'], cam['res_h']),
                     input_video_skip=args.viz_skip)
