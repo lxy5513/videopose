@@ -26,7 +26,7 @@ def parse_args():
                         help='create a checkpoint every N epochs')
     parser.add_argument('-r', '--resume', default='', type=str, metavar='FILENAME',
                         help='checkpoint to resume (file name)')
-    parser.add_argument('--evaluate', default='', type=str, metavar='FILENAME', help='checkpoint to evaluate (file name)')
+    parser.add_argument('--evaluate', default='cpn-pt-243.bin', type=str, metavar='FILENAME', help='checkpoint to evaluate (file name)')
     parser.add_argument('--render', action='store_true', help='visualize a particular video')
     parser.add_argument('--by-subject', action='store_true', help='break down error by subject (on evaluation)')
     parser.add_argument('--export-training-curves', action='store_true', help='save training curves as .png images')
@@ -65,13 +65,13 @@ def parse_args():
     parser.add_argument('--viz-video', type=str, metavar='PATH', help='path to input video')
     parser.add_argument('--viz-skip', type=int, default=0, metavar='N', help='skip first N frames of input video')
     parser.add_argument('--viz-output', type=str, metavar='PATH', help='output file name (.gif or .mp4)')
-    parser.add_argument('--viz-bitrate', type=int, default=3000, metavar='N', help='bitrate for mp4 videos')
+    parser.add_argument('--viz-bitrate', type=int, default=30000, metavar='N', help='bitrate for mp4 videos')
     parser.add_argument('--viz-no-ground-truth', action='store_true', help='do not show ground-truth poses')
     parser.add_argument('--viz-limit', type=int, default=-1, metavar='N', help='only render first N frames')
     parser.add_argument('--viz-downsample', type=int, default=1, metavar='N', help='downsample FPS by a factor N')
     parser.add_argument('--viz-size', type=int, default=5, metavar='N', help='image size')
     # self add
-    parser.add_argument('--input_npz', type=str, default='', help='input 2d numpy file')
+    parser.add_argument('--input-npz',dest='input_npz', type=str, default='', help='input 2d numpy file')
 
     parser.set_defaults(bone_length_term=True)
     parser.set_defaults(data_augmentation=True)

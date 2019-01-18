@@ -120,7 +120,8 @@ parser.add_argument('--mode', dest='mode',
                     help='detection mode, fast/normal/accurate', default="accurate")
 parser.add_argument('--outdir', dest='outputpath',
                     help='output-directory', default="examples/res/")
-parser.add_argument('--inp_dim', dest='inp_dim', type=str, default='608',
+#  parser.add_argument('--inp_dim', dest='inp_dim', type=str, default='608',
+parser.add_argument('--inp_dim', dest='inp_dim', type=str, default='384',
                     help='inpdim')
 parser.add_argument('--conf', dest='confidence', type=float, default=0.05,
                     help='bounding box confidence threshold')
