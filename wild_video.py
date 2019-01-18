@@ -19,17 +19,28 @@ from time import time
 args = parse_args()
 print(args)
 
+import time
+# record time 
+def ckpt_time(ckpt=None):
+    if not ckpt:
+        return time.time()
+    else:
+        return time.time() - float(ckpt), time.time()
+
+
+
+time0 = ckpt_time()
 print('Loading 3D dataset...')
 dataset_path = 'data/data_3d_' + args.dataset + '.npz' #  dataset 'h36m'
 from common.h36m_dataset import Human36mDataset
 dataset = Human36mDataset(dataset_path) #'data/data_3d_h36m.npz'
 
+ckpt, time1 = ckpt_time(time0)
+print('load 3D dataset spend {:2f} second'.format(ckpt))
 
 # according to output name,generate some format. we use detectron
 from data.data_utils import suggest_metadata, suggest_pose_importer
 metadata = suggest_metadata('detectron_pt_coco')
-
-
 print('Loading 2D detections keypoints ...')
 
 if args.input_npz:
@@ -48,6 +59,8 @@ else:
 input_num = 2
 keypoints = keypoints[:, :, :input_num]
 
+ckpt, time2 = ckpt_time(time1)
+print('load 2D dataset spend {:2f} second'.format(ckpt))
 
 keypoints_symmetry = metadata['keypoints_symmetry']
 kps_left, kps_right = list(keypoints_symmetry[0]), list(keypoints_symmetry[1])
@@ -68,6 +81,9 @@ chk_filename = os.path.join(args.checkpoint, args.resume if args.resume else arg
 print('Loading checkpoint', chk_filename)
 checkpoint = torch.load(chk_filename, map_location=lambda storage, loc: storage)# 把loc映射到storage
 model_pos.load_state_dict(checkpoint['model_pos'])
+
+ckpt, time3 = ckpt_time(time2)
+print('load 3D pose spend {:2f} second'.format(ckpt))
 
 #  Receptive field: 243 frames for args.arc [3, 3, 3, 3, 3]
 receptive_field = model_pos.receptive_field()
@@ -120,6 +136,9 @@ prediction[:, :, 2] -= np.min(prediction[:, :, 2])
 
 anim_output = {'Reconstruction': prediction}
 
+ckpt, time4 = ckpt_time(time3)
+print('restruction 3D pose spends {:2f} second'.format(ckpt))
+
 input_keypoints = image_coordinates(input_keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
 # set default fps = 25 dataset.fps()  = 25
@@ -132,3 +151,14 @@ render_animation(input_keypoints, anim_output,
                     input_video_path=args.viz_video, viewport=(cam['res_w'], cam['res_h']),
                     input_video_skip=args.viz_skip)
 
+
+ckpt, time5 = ckpt_time(time4)
+if args.viz_limit < 1:
+    frames = input_keypoints.shape[0] 
+else:
+    frames = args.viz_limit
+print('generate {} frames video/gif spends {:2f} second '.format(frames, ckpt))
+
+
+ckpt, time6 = ckpt_time(time0)
+print('total spend {:2f} second'.format(ckpt))

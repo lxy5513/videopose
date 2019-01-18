@@ -65,6 +65,7 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
     """
     plt.ioff()
     fig = plt.figure(figsize=(size*(1 + len(poses)), size))
+    # 2D
     ax_in = fig.add_subplot(1, 1 + len(poses), 1)
     ax_in.get_xaxis().set_visible(False)
     ax_in.get_yaxis().set_visible(False)
@@ -76,12 +77,15 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
     trajectories = []
     radius = 1.7
     for index, (title, data) in enumerate(poses.items()):
+        # 3D
         ax = fig.add_subplot(1, 1 + len(poses), index+2, projection='3d')
         ax.view_init(elev=15., azim=azim)
+        # set 长度范围
         ax.set_xlim3d([-radius/2, radius/2])
         ax.set_zlim3d([0, radius])
         ax.set_ylim3d([-radius/2, radius/2])
         ax.set_aspect('equal')
+        # 坐标轴刻度
         ax.set_xticklabels([])
         ax.set_yticklabels([])
         ax.set_zticklabels([])
@@ -89,8 +93,27 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
         ax.set_title(title) #, pad=35
         ax_3d.append(ax)
         lines_3d.append([])
+
+        # lxy add
+        ax.set_xlabel('X Label')
+        ax.set_ylabel('Y Label')
+        ax.set_zlabel('Z Label')
+
+        # 轨迹 is base on position 0
         trajectories.append(data[:, 0, [0, 1]])
     poses = list(poses.values())
+
+
+    # ###################################################
+    #  xx = trajectories[0]
+    #  bad_points = []
+    #  for i in  range(len(xx)-1):
+        #  dis = xx[i+1] - xx[i]
+        #  value = abs(dis[0]) + abs(dis[1])
+        #  if value > 1e-06:
+            #  bad_points.append(i)
+            #  print(i, '      ',value)
+
 
     # Decode video
     if input_video_path is None:
@@ -124,10 +147,12 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
 
     # array([-1,  0,  1,  2,  0,  4,  5,  0,  7,  8,  9,  8, 11, 12,  8, 14, 15])
     parents = skeleton.parents()
+
     def update_video(i):
         nonlocal initialized, image, lines, points
 
         for n, ax in enumerate(ax_3d):
+            # 对于 each video
             ax.set_xlim3d([-radius/2 + trajectories[n][i, 0], radius/2 + trajectories[n][i, 0]])
             ax.set_ylim3d([-radius/2 + trajectories[n][i, 1], radius/2 + trajectories[n][i, 1]])
 
@@ -136,35 +161,45 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
             image = ax_in.imshow(all_frames[i], aspect='equal')
 
             for j, j_parent in enumerate(parents):
-                pdb()
+                # 每个 keypoint of each frame
                 if j_parent == -1:
                     continue
 
                 if len(parents) == keypoints.shape[1]:
-                    # Draw skeleton only if keypoints match (otherwise we don't have the parents definition)
-                    lines.append(ax_in.plot([keypoints[i, j, 0], keypoints[i, j_parent, 0]],
-                                            [keypoints[i, j, 1], keypoints[i, j_parent, 1]], color='pink'))
+                    color_pink = 'pink'
+                    if j == 1 or j == 2:
+                        color_pink = 'black'
+                    # 画图2D
+                    #  #  Draw skeleton only if keypoints match (otherwise we don't have the parents definition)
+                    #  lines.append(ax_in.plot([keypoints[i, j, 0], keypoints[i, j_parent, 0]],
+                                            #  [keypoints[i, j, 1], keypoints[i, j_parent, 1]], color=color_pink))
 
-                    col = 'red' if j in skeleton.joints_right() else 'black' for n, ax in enumerate(ax_3d):
+                col = 'red' if j in skeleton.joints_right() else 'black'
+                for n,ax in enumerate(ax_3d):
                     pos = poses[n][i]
+                    # 画图3D
                     lines_3d[n].append(ax.plot([pos[j, 0], pos[j_parent, 0]],
                                                [pos[j, 1], pos[j_parent, 1]],
                                                [pos[j, 2], pos[j_parent, 2]], zdir='z', c=col))
 
-            points = ax_in.scatter(*keypoints[i].T, 5, color='red', edgecolors='white', zorder=10)
+            # 一个 frame 的 scatter image
+            points = ax_in.scatter(*keypoints[i].T, 8, color='red', edgecolors='white', zorder=10)
 
             initialized = True
         else:
             image.set_data(all_frames[i])
 
+            # 对于 each frame
             for j, j_parent in enumerate(parents):
                 if j_parent == -1:
                     continue
 
-                if len(parents) == keypoints.shape[1]:
-                    lines[j-1][0].set_data([keypoints[i, j, 0], keypoints[i, j_parent, 0]],
-                                           [keypoints[i, j, 1], keypoints[i, j_parent, 1]])
+                #  # 画图2D
+                #  if len(parents) == keypoints.shape[1]:
+                    #  lines[j-1][0].set_data([keypoints[i, j, 0], keypoints[i, j_parent, 0]],
+                                        #  [keypoints[i, j, 1], keypoints[i, j_parent, 1]])
 
+                # 3D plot
                 for n, ax in enumerate(ax_3d):
                     pos = poses[n][i]
                     lines_3d[n][j-1][0].set_xdata([pos[j, 0], pos[j_parent, 0]])

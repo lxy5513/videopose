@@ -137,6 +137,7 @@ def handle_video(videofile):
     filename = os.path.basename(args.video).split('.')[0]
     name = '/home/xyliu/experiments/VideoPose3D/data/'+filename + '.npz'
     kpts = np.array(kpts).astype(np.float32)
+    print('kpts npz save in ', name)
     np.savez_compressed(name, kpts=kpts)
     return kpts
 
