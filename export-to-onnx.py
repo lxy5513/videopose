@@ -1,4 +1,5 @@
 import numpy as np
+import ipdb; pdb=ipdb.set_trace
 
 from common.arguments import parse_args
 import torch
@@ -38,11 +39,12 @@ dataset = Human36mDataset(dataset_path) #'data/data_3d_h36m.npz'
 ckpt, time1 = ckpt_time(time0)
 print('load 3D dataset spend {:2f} second'.format(ckpt))
 
-# according to output name,generate some format. we use detectron
-from data.data_utils import suggest_metadata, suggest_pose_importer
-metadata = suggest_metadata('detectron_pt_coco')
-print('Loading 2D detections keypoints ...')
+metadata = {'layout_name': 'coco',
+ 'num_joints': 17,
+ 'keypoints_symmetry': [[1, 3, 5, 7, 9, 11, 13, 15], [2, 4, 6, 8, 10, 12, 14, 16]]
+ }
 
+print('Loading 2D detections keypoints ...')
 if args.input_npz:
     #如果already exist keypoint npz file
     npz = np.load(args.input_npz)
@@ -71,6 +73,7 @@ joints_left, joints_right = list(dataset.skeleton().joints_left()), list(dataset
 cam = dataset.cameras()['S1'][0]
 keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
+
 model_pos = TemporalModel(17, input_num, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
                             dense=args.dense)
 if torch.cuda.is_available():
@@ -89,8 +92,6 @@ receptive_field = model_pos.receptive_field()
 pad = (receptive_field - 1) // 2 # Padding on each side
 causal_shift = 0
 
-
-
 def evaluate(test_generator, action=None, return_predictions=False):
     with torch.no_grad():
         model_pos.eval()
@@ -103,6 +104,11 @@ def evaluate(test_generator, action=None, return_predictions=False):
             # Positional model
             predicted_3d_pos = model_pos(inputs_2d)
 
+            ######################### export to onnx
+            # inputs_2d.shape torch.Size([2, 1070, 17, 2])
+            pdb()
+            torch.onnx.export(model_pos, inputs_2d, "3D-pose.onnx")
+            ############################################
 
             # Test-time augmentation (if enabled)
             if test_generator.augment_enabled():
