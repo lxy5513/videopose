@@ -22,7 +22,7 @@ def image_coordinates(X, w, h):
     assert X.shape[-1] == 2
 
     # Reverse camera frame normalization
-    return (X + [1, h/w])*w/2
+    return (X + [1, h/w]) * w/2
 
 
 def world_to_camera(X, R, t):

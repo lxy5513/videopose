@@ -3,13 +3,15 @@ from graphpipe import remote
 import ipdb;pdb = ipdb.set_trace
 from utils import *
 import torch
+from camera import camera_to_world
 
 
 np_name = '../data/taiji.npz'
 data = np.load(np_name)
+
+# pre processing
 kpts = data['kpts']
 data = normlize(kpts, w=1000, h=1002)
-
 
 metadata={'layout_name': 'coco','num_joints': 17,'keypoints_symmetry': [[1, 3, 5, 7, 9, 11, 13, 15],[2, 4, 6, 8, 10, 12, 14, 16]]}
 keypoints_symmetry = metadata['keypoints_symmetry']
@@ -23,7 +25,11 @@ batch_2d[1, :, :, 0] *= -1
 batch_2d[1, :, kps_left + kps_right] = batch_2d[1, :, kps_right + kps_left]
 batch_2d = batch_2d.astype(np.float32)
 
+# link server
 predicted_3d_pos = remote.execute("http://127.0.0.1:9000", batch_2d)
+
+
+# post processing
 predicted_3d_pos = np.copy(predicted_3d_pos)
 predicted_3d_pos[1, :, :, 0] *= -1
 predicted_3d_pos[1, :, joints_left + joints_right] = predicted_3d_pos[1, :, joints_right + joints_left]
@@ -31,7 +37,6 @@ prediction = np.mean(predicted_3d_pos, axis=0, keepdims=True)[0]
 
 
 rot = params.rot()
-from camera import camera_to_world
 prediction = camera_to_world(prediction, R=rot, t=0)
 
 # We don't have the trajectory, but at least we can rebase the height
@@ -47,7 +52,6 @@ downsample = 1
 size = 5
 viz_video = '../videos/taiji.mp4'
 skip = 0
-
 
 class skeleton():
     def parents(self):
