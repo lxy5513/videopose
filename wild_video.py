@@ -53,6 +53,7 @@ else:
     video_name = args.viz_video
     keypoints = handle_video(video_name)
 
+#  import ipdb;ipdb.set_trace()
 
 # 2 代表 keypoint, 3 代表 keypoint and probability score after softmax
 # 2 fit for cpn-pt-243.bin  //  3 for d-pt-243.bin
