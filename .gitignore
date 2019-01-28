@@ -4,4 +4,8 @@ checkpoint/
 *.gif 
 *.jpg 
 *.png 
+*.npz 
+*.zip
+*.json 
+*.mp4
 
