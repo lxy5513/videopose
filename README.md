@@ -16,6 +16,7 @@
 指定输入视频  --viz-video  
 指定输入视频的关节点  --input-npz   
 指定输出视频名称  --viz-output   
+指定输出的帧数  --viz-limit 
 ```
 
 <br> 
