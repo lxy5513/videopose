@@ -183,7 +183,7 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
                                                [pos[j, 2], pos[j_parent, 2]], zdir='z', c=col))
 
             # 一个 frame 的 scatter image
-            points = ax_in.scatter(*keypoints[i].T, 8, color='red', edgecolors='white', zorder=10)
+            #  points = ax_in.scatter(*keypoints[i].T, 8, color='red', edgecolors='white', zorder=10)
 
             initialized = True
         else:
@@ -211,9 +211,8 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
             for angle in range(0, 360):
                 # 仰角 方位角
                 ax_3d[0].view_init(0, 90)
-                #  ax_3d[0].view_init(90, angle)
 
-            points.set_offsets(keypoints[i])
+            #  points.set_offsets(keypoints[i])
 
         print('finish one frame\t  {}/{}      '.format(i, limit), end='\r')
 

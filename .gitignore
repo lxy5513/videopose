@@ -8,4 +8,7 @@ checkpoint/
 *.zip
 *.json 
 *.mp4
+*.har 
+*.pth  
+*.yolov3.weights
 

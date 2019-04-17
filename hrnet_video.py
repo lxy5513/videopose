@@ -36,10 +36,14 @@ class skeleton():
     def joints_right(self):
         return [1, 2, 3, 9, 10]
 
-def evaluate(test_generator, action=None, return_predictions=False):
+def evaluate(test_generator, model_pos, action=None, return_predictions=False):
+
+    joints_left, joints_right = list([4, 5, 6, 11, 12, 13]), list([1, 2, 3, 14, 15, 16])
     with torch.no_grad():
         model_pos.eval()
+
         N = 0
+
         for _, batch, batch_2d in test_generator.next_epoch():
 
             inputs_2d = torch.from_numpy(batch_2d.astype('float32'))
@@ -58,22 +62,20 @@ def evaluate(test_generator, action=None, return_predictions=False):
 
             if return_predictions:
                 return predicted_3d_pos.squeeze(0).cpu().numpy()
-def get_kpts():
-    pass
 
 def main():
     args = parse_args()
-    print(args)
 
     # 2D kpts loads or generate
     if not args.input_npz:
         # 通过hrnet生成关键点
+        from hrnet.pose_estimation.video import generate_kpts
+        video_name = args.viz_video
         print('generat keypoints by hrnet...')
-        npz = get_kpts()
+        keypoints = generate_kpts(video_name)
     else:
         npz = np.load(args.input_npz)
-
-    keypoints = npz['kpts']
+        keypoints = npz['kpts'] #(N, 17, 2)
 
     keypoints_symmetry = metadata['keypoints_symmetry']
     kps_left, kps_right = list(keypoints_symmetry[0]), list(keypoints_symmetry[1])
@@ -112,7 +114,7 @@ def main():
     gen = UnchunkedGenerator(None, None, [input_keypoints],
                                 pad=pad, causal_shift=causal_shift, augment=args.test_time_augmentation,
                                 kps_left=kps_left, kps_right=kps_right, joints_left=joints_left, joints_right=joints_right)
-    prediction = evaluate(gen, return_predictions=True)
+    prediction = evaluate(gen,model_pos, return_predictions=True)
 
     rot = np.array([ 0.14070565, -0.15007018, -0.7552408 ,  0.62232804], dtype=np.float32)
     prediction = camera_to_world(prediction, R=rot, t=0)
@@ -122,13 +124,12 @@ def main():
     anim_output = {'Reconstruction': prediction}
     input_keypoints = image_coordinates(input_keypoints[..., :2], w=1000, h=1002)
 
-
     ckpt, time3 = ckpt_time(time2)
     print('------- generate reconstruction 3D data spends {:.2f} seconds'.format(ckpt))
 
 
     if not args.viz_output:
-        args.viz_output = 'xxxx.gif'
+        args.viz_output = 'result.mp4'
 
     from common.visualization import render_animation
     render_animation(input_keypoints, anim_output,
@@ -137,5 +138,7 @@ def main():
                         input_video_path=args.viz_video, viewport=(1000, 1002),
                         input_video_skip=args.viz_skip)
 
+    ckpt, time4 = ckpt_time(time3)
+    print('total spend {:2f} second'.format(ckpt))
 if __name__ == '__main__':
     main()
