@@ -32,4 +32,8 @@ or
 `updata 2019-04-17`    
 添加hrnet 2D关键点检测模块,实现更高精读的3D video 重构   [`hrnet`](https://github.com/lxy5513/hrnet)  
 其中hrnet依赖的pose模型地址https://drive.google.com/drive/folders/1nzM_OBV9LbAEA7HClC0chEyf_7ECDXYA  
-yolo模型地址下载方法`wget https://pjreddie.com/media/files/yolov3.weights`
+yolo模型地址下载方法`wget https://pjreddie.com/media/files/yolov3.weights`   
+
+   
+   
+videopose的模型地址https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243.bin
