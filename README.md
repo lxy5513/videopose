@@ -9,9 +9,7 @@ or
 
 
 ## DEMO
-`python demo.py`
-
-<br>
+`python demo.py`  
 
 ```
 指定输入视频  --viz-video  
@@ -19,5 +17,9 @@ or
 指定输出视频名称  --viz-output   
 ```
 
+---  
+
+
+`updata 2019-04-17`    
 添加hrnet 2D关键点检测模块,实现更高精读的3D video 重构   
-(hrnet)[git@github.com:lxy5513/hrnet.git]
+[hrnet](git@github.com:lxy5513/hrnet.git)
