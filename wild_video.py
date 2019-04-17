@@ -28,7 +28,6 @@ def ckpt_time(ckpt=None):
         return time.time() - float(ckpt), time.time()
 
 
-
 time0 = ckpt_time()
 print('Loading 3D dataset...')
 dataset_path = 'data/data_3d_' + args.dataset + '.npz' #  dataset 'h36m'
@@ -53,7 +52,6 @@ else:
     video_name = args.viz_video
     keypoints = handle_video(video_name)
 
-#  import ipdb;ipdb.set_trace()
 
 # 2 代表 keypoint, 3 代表 keypoint and probability score after softmax
 # 2 fit for cpn-pt-243.bin  //  3 for d-pt-243.bin
@@ -76,6 +74,7 @@ model_pos = TemporalModel(17, input_num, 17,filter_widths=[3, 3, 3, 3, 3], causa
                             dense=args.dense)
 if torch.cuda.is_available():
     model_pos = model_pos.cuda()
+
 # load trained model
 chk_filename = os.path.join(args.checkpoint, args.resume if args.resume else args.evaluate)
 print('Loading checkpoint', chk_filename)
