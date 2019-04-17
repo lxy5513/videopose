@@ -2,15 +2,20 @@
 我是用的是torch1.0.1 版本 conda    
 `conda env create -f env_info_file.yml`
 
+--- 
 
-## handle video
+## handle video by alphapose
 `python wild_video.py --viz-output output.mp4 --viz-video /path/to/video.mp4`
 or
 `python wild_video.py --viz-output output.gif --viz-video /path/to/video.mp4 --viz-limit 180`
 
+---
 
 ## handle video with every frame keypoints
 `python wild_video.py --viz-output output.mp4 --viz-video /path/to/video.mp4 --input-npz /path/to/input_name.npz`
+
+
+---
 
 
 ## DEMO
