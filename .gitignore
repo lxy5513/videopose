@@ -11,4 +11,5 @@ checkpoint/
 *.har 
 *.pth  
 *.yolov3.weights
+*.avi
 
