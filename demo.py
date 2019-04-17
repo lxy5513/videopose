@@ -32,7 +32,7 @@ time0 = ckpt_time()
 # 2D kpts loads
 if not args.input_npz:
     print('load data/taiji.npz')
-    npz = np.load('data/taiji.npz')
+    npz = np.load('/home/xyliu/experiments/openpose/outputs/track/dance/kpts.npz')
 else:
     npz = np.load(args.input_npz)
 
@@ -124,6 +124,9 @@ print('------- generate reconstruction 3D data spends {:.2f} seconds'.format(ckp
 
 if not args.viz_output:
     args.viz_output = 'xxxx.gif'
+    
+# args.viz_limit = 100
+
 from common.visualization import render_animation
 render_animation(input_keypoints, anim_output,
                     skeleton(), 25, args.viz_bitrate, np.array(70., dtype=np.float32), args.viz_output,

@@ -100,7 +100,7 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
         ax.set_zlabel('Z Label')
 
         # 轨迹 is base on position 0
-        trajectories.append(data[:, 0, [0, 1]])
+        trajectories.append(data[:, 0, [0, 1]]) # only add x,y not z
     poses = list(poses.values())
 
 
@@ -201,14 +201,21 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
 
                 # 3D plot
                 for n, ax in enumerate(ax_3d):
-                    pos = poses[n][i]
+                    pos = poses[n][i] #one frame key points
                     lines_3d[n][j-1][0].set_xdata([pos[j, 0], pos[j_parent, 0]])
                     lines_3d[n][j-1][0].set_ydata([pos[j, 1], pos[j_parent, 1]])
                     lines_3d[n][j-1][0].set_3d_properties([pos[j, 2], pos[j_parent, 2]], zdir='z')
 
+            #  ax_3d.append(ax_3d[0])
+            # rotate the Axes3D
+            for angle in range(0, 360):
+                # 仰角 方位角
+                ax_3d[0].view_init(0, 90)
+                #  ax_3d[0].view_init(90, angle)
+
             points.set_offsets(keypoints[i])
 
-        print('{}/{}      '.format(i, limit), end='\r')
+        print('finish one frame\t  {}/{}      '.format(i, limit), end='\r')
 
 
     fig.tight_layout()
