@@ -50,6 +50,6 @@ or
 ## 相关模型下载reletive model download  
 
 其中hrnet依赖的pose model address: https://drive.google.com/drive/folders/1nzM_OBV9LbAEA7HClC0chEyf_7ECDXYA)
-yolov3 model地址下载方法: `wget https://pjreddie.com/media/files/yolov3.weights`   
+yolov3 model download: `wget https://pjreddie.com/media/files/yolov3.weights`   
 
 videopose model address: https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243.bin
