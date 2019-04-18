@@ -13,10 +13,10 @@ I use torch1.0.1 in conda
 `python demo.py`  
 
 ```
-指定输入视频input video   --viz-video  
-指定输入视频the keypoints of input_video  --input-npz   
-指定输出视频名称 the name of output video --viz-output   
-指定输出的帧数the frames number of output video  --viz-limit 
+指定输入视频(input_video)   --viz-video  
+指定输入视频(the keypoints of input_video)  --input-npz   
+指定输出视频名称(the name of output video) --viz-output   
+指定输出的帧数(the frame number of output video)  --viz-limit 
 ```
 
 <br> 
