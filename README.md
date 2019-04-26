@@ -53,3 +53,9 @@ or
 yolov3 model download: `wget https://pjreddie.com/media/files/yolov3.weights`   
 
 videopose model address: https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243.bin
+
+---
+
+
+## `TODO`
+- [ ] add `FPN-DCN` huamn detector for hrnet to realize better accuracy.
