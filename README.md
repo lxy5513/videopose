@@ -24,7 +24,7 @@ I use torch1.0.1 in conda
 
 ## handle video by hrnet 
 `updata at 2019-04-17`     
-`python hrnet_video.py --viz-video /path/to/video.mp4`
+`python tools/hrnet_video.py --viz-video /path/to/video.mp4`
 
 add hrnet 2D keypoints detection module, to realize the end to end 3D reconstruction  
 添加hrnet 2D关键点检测模块,实现更高精读的3D video 重构   [`hrnet`](https://github.com/lxy5513/hrnet)
@@ -32,14 +32,14 @@ add hrnet 2D keypoints detection module, to realize the end to end 3D reconstruc
 <br> 
 
 ## handle video by alphapose
-`python wild_video.py --viz-output output.mp4 --viz-video /path/to/video.mp4`
+`python tools/alphapose_video.py --viz-output output.mp4 --viz-video /path/to/video.mp4`
 or
-`python wild_video.py --viz-output output.gif --viz-video /path/to/video.mp4 --viz-limit 180`
+`python tools/aphapose_video.py --viz-output output.gif --viz-video /path/to/video.mp4 --viz-limit 180`
 
 <br>
 
 ## handle video with every frame keypoints
-`python wild_video.py --viz-output output.mp4 --viz-video /path/to/video.mp4 --input-npz /path/to/input_name.npz`
+`python tools/wild_video.py --viz-output output.mp4 --viz-video /path/to/video.mp4 --input-npz /path/to/input_name.npz`
 
 
 <br> 
