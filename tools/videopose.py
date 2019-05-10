@@ -1,5 +1,5 @@
 '''
-通过最新的deep-high-resolution作为2D关键点的获取, 实现高精度的端到端3D姿态重建
+通过实现高精度的端到端3D姿态重建
 '''
 
 import os
@@ -10,7 +10,6 @@ sys.path.insert(0, main_path)
 
 import numpy as np
 import ipdb;pdb = ipdb.set_trace
-
 from common.arguments import parse_args
 import torch
 import torch.nn as nn
@@ -72,8 +71,7 @@ def main():
 
     # 2D kpts loads or generate
     if not args.input_npz:
-        # 通过hrnet生成关键点
-        from joints_detectors.hrnet.pose_estimation.video import generate_kpts
+        from joints_detectors.openpose.main import generate_kpts
         video_name = args.viz_video
         print('generat keypoints by hrnet...')
         keypoints = generate_kpts(video_name)
@@ -86,7 +84,7 @@ def main():
     joints_left, joints_right = list([4, 5, 6, 11, 12, 13]), list([1, 2, 3, 14, 15, 16])
 
     # normlization keypoints  假设use the camera parameter
-    keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=1000, h=1002)
+    keypoints = normalize_screen_coordinates(keypoints[..., :2], w=1000, h=1002)
 
     model_pos = TemporalModel(17, 2, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
                                 dense=args.dense)

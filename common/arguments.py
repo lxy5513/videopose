@@ -62,7 +62,7 @@ def parse_args():
     parser.add_argument('--viz-subject', type=str, metavar='STR', help='subject to render')
     parser.add_argument('--viz-action', type=str, metavar='STR', help='action to render')
     parser.add_argument('--viz-camera', type=int, default=0, metavar='N', help='camera to render')
-    parser.add_argument('--viz-video', type=str, metavar='PATH', help='path to input video')
+    parser.add_argument('--viz-video', type=str, metavar='PATH', default='/home/xyliu/Videos/sports/dance.mp4', help='path to input video')
     parser.add_argument('--viz-skip', type=int, default=0, metavar='N', help='skip first N frames of input video')
     parser.add_argument('--viz-output', type=str, metavar='PATH', help='output file name (.gif or .mp4)')
     parser.add_argument('--viz-bitrate', type=int, default=30000, metavar='N', help='bitrate for mp4 videos')

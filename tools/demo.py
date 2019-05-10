@@ -1,16 +1,13 @@
 import numpy as np
 import ipdb;pdb = ipdb.set_trace
-
 from common.arguments import parse_args
 import torch
-
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import os
 import sys
 import errno
-
 from common.camera import *
 from common.model import *
 from common.loss import *

@@ -80,12 +80,6 @@ for subject in dataset.subjects():
             # We check for >= instead of == because some videos in H3.6M contain extra frames
             mocap_length = dataset[subject][action]['positions_3d'][cam_idx].shape[0]
 
-            ########### lxy ++
-            #  import ipdb; ipdb.set_trace()
-            #  mocap_length=keypoints[subject][action][cam_idx].shape[0]
-            #  if cam_idx>=1:
-                #  continue
-
             assert keypoints[subject][action][cam_idx].shape[0] >= mocap_length
 
             if keypoints[subject][action][cam_idx].shape[0] > mocap_length:
