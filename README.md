@@ -73,7 +73,7 @@ videopose model address: https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243
 <br>
 
 ## commen problems
-1. model save loaction
+1. model save location
 
 > for hrnet model you can refer this:
 https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/pose_estimation/video.py#L79 .
