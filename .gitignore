@@ -12,3 +12,4 @@ checkpoint/
 *.pth  
 *.weights
 *.avi
+*.caffemodel
