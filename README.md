@@ -81,15 +81,17 @@ videopose model address: https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243
 1. model save location
 
 > for hrnet model you can refer this:
-https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/pose_estimation/video.py#L79 .
+https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/pose_estimation/video.py#L79   
+joints_detectors/hrnet/models/pytorch/pose_coco/
 
 > for yolov3 model:
-joints_detectors/hrnet/lib/detector/yolo/
 you can refer this:
-https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/lib/detector/yolo/human_detector.py#L55
+https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/lib/detector/yolo/human_detector.py#L55   
+joints_detectors/hrnet/lib/detector/yolo/
 
 > for videopose model:
-https://github.com/lxy5513/videopose/blob/master/common/arguments.py#L29
+https://github.com/lxy5513/videopose/blob/master/common/arguments.py#L29  
+checkpoint/
 
 > by the way:
 you can change the model path to what you want
