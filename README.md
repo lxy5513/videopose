@@ -23,8 +23,13 @@ I use torch1.0.1 in conda
 
 
 ## handle video by hrnet 
-`updata at 2019-04-17`     
-`python tools/hrnet_video.py --viz-video /path/to/video.mp4`
+`updata at 2019-04-17` 
+```
+cd cd joints_detectors/hrnet/lib/
+make
+
+python tools/hrnet_video.py --viz-video /path/to/video.mp4
+```
 
 add hrnet 2D keypoints detection module, to realize the end to end 3D reconstruction  
 添加hrnet 2D关键点检测模块,实现更高精读的3D video 重构   [`hrnet`](https://github.com/lxy5513/hrnet)
