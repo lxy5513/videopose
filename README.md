@@ -25,9 +25,9 @@ I use torch1.0.1 in conda
 ## handle video by hrnet 
 `updata at 2019-04-17` 
 ```
-cd cd joints_detectors/hrnet/lib/
+cd joints_detectors/hrnet/lib/
 make
-
+cd -
 python tools/hrnet_video.py --viz-video /path/to/video.mp4
 ```
 
