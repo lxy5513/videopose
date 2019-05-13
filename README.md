@@ -50,6 +50,7 @@ add hrnet 2D keypoints detection module, to realize the end to end 3D reconstruc
 or
 `python tools/aphapose_video.py --viz-output output.gif --viz-video /path/to/video.mp4 --viz-limit 180`
 
+<br> 
 <br>
 
 ## handle video with every frame keypoints
@@ -57,10 +58,7 @@ or
 
 
 <br> 
-
-
----
-
+<br>
 
 ## `TODO`
 - [ ] add `FPN-DCN` huamn detector for hrnet to realize better accuracy.  
@@ -82,7 +80,8 @@ videopose model address: https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243
 
 
 
----
+<br> 
+<br>
 ## paper traslation 论文翻译  
 https://github.com/lxy5513/videopose/blob/master/doc/translate.md
 
