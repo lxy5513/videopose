@@ -1,3 +1,12 @@
+
+
+
+
+
+<p align="center"><img src="outputs/op_dance.gif" width="70%" alt="" /></p>
+
+
+
 ## envrionment configture
 I use torch1.0.1 in conda    
 `conda env create -f env_info_file.yml`
@@ -74,6 +83,10 @@ videopose model address: https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243
 
 
 ---
+## paper traslation 论文翻译  
+https://github.com/lxy5513/videopose/blob/master/doc/translate.md
+
+
 <br>
 <br>
 
