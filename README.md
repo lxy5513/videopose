@@ -82,6 +82,7 @@ videopose model address: https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243
 
 <br> 
 <br>
+
 ## paper traslation 论文翻译  
 https://github.com/lxy5513/videopose/blob/master/doc/translate.md
 
