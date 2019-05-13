@@ -25,6 +25,8 @@ args = parser.parse_known_args()
 params = dict()
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 params["model_folder"] = cur_dir + "/models/"
+params['tracking'] = 5
+params['number_people_max'] = 1
 #  import ipdb;ipdb.set_trace()
 
 
