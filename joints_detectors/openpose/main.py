@@ -89,6 +89,14 @@ def generate_kpts(video_name):
 
     # pose processes
     result = np.array(kpt_results)
+
+    # save
+    name = '/home/xyliu/experiments/VideoPose3D/data/tmp.npz'
+    kpts = result.astype(np.float32)
+    print('kpts npz save in ', name)
+    np.savez_compressed(name, kpts=kpts)
+    return kpts
+
     return result
 
 
