@@ -218,7 +218,6 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
 
 
     fig.tight_layout()
-    pdb()
 
     anim = FuncAnimation(fig, update_video, frames=np.arange(0, limit), interval=1000/fps, repeat=False)
     if output.endswith('.mp4'):

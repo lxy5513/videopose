@@ -86,7 +86,7 @@ def main():
     joints_left, joints_right = list([4, 5, 6, 11, 12, 13]), list([1, 2, 3, 14, 15, 16])
 
     # normlization keypoints  假设use the camera parameter
-    keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=1000, h=1002)
+    keypoints = normalize_screen_coordinates(keypoints[..., :2], w=1000, h=1002)
 
     model_pos = TemporalModel(17, 2, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
                                 dense=args.dense)
@@ -101,7 +101,6 @@ def main():
     # load trained model
     chk_filename = os.path.join(args.checkpoint, args.resume if args.resume else args.evaluate)
     print('Loading checkpoint', os.path.join(main_path,chk_filename))
-    pdb()
     checkpoint = torch.load(os.path.join(main_path,chk_filename), map_location=lambda storage, loc: storage)# 把loc映射到storage
     model_pos.load_state_dict(checkpoint['model_pos'])
 

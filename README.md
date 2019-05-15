@@ -1,3 +1,14 @@
+
+
+
+
+
+<p align="center"><img src="outputs/op_dance.gif" width="70%" alt="" /></p>
+
+
+<p align="center"><img src="outputs/op_girl.gif" width="70%" alt="" /></p>
+
+
 ## envrionment configture
 I use torch1.0.1 in conda    
 `conda env create -f env_info_file.yml`
@@ -23,8 +34,13 @@ I use torch1.0.1 in conda
 
 
 ## handle video by hrnet 
-`updata at 2019-04-17`     
-`python tools/hrnet_video.py --viz-video /path/to/video.mp4`
+`updata at 2019-04-17` 
+```
+cd joints_detectors/hrnet/lib/
+make
+cd -
+python tools/hrnet_video.py --viz-video /path/to/video.mp4
+```
 
 add hrnet 2D keypoints detection module, to realize the end to end 3D reconstruction  
 添加hrnet 2D关键点检测模块,实现更高精读的3D video 重构   [`hrnet`](https://github.com/lxy5513/hrnet)
@@ -36,6 +52,7 @@ add hrnet 2D keypoints detection module, to realize the end to end 3D reconstruc
 or
 `python tools/aphapose_video.py --viz-output output.gif --viz-video /path/to/video.mp4 --viz-limit 180`
 
+<br> 
 <br>
 
 ## handle video with every frame keypoints
@@ -43,10 +60,7 @@ or
 
 
 <br> 
-
-
----
-
+<br>
 
 ## `TODO`
 - [ ] add `FPN-DCN` huamn detector for hrnet to realize better accuracy.  
@@ -68,7 +82,13 @@ videopose model address: https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243
 
 
 
----
+<br> 
+<br>
+
+## paper traslation 论文翻译  
+https://github.com/lxy5513/videopose/blob/master/doc/translate.md
+
+
 <br>
 <br>
 
@@ -76,15 +96,17 @@ videopose model address: https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243
 1. model save location
 
 > for hrnet model you can refer this:
-https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/pose_estimation/video.py#L79 .
+https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/pose_estimation/video.py#L79   
+joints_detectors/hrnet/models/pytorch/pose_coco/
 
 > for yolov3 model:
-joints_detectors/hrnet/lib/detector/yolo/
 you can refer this:
-https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/lib/detector/yolo/human_detector.py#L55
+https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/lib/detector/yolo/human_detector.py#L55   
+joints_detectors/hrnet/lib/detector/yolo/
 
 > for videopose model:
-https://github.com/lxy5513/videopose/blob/master/common/arguments.py#L29
+https://github.com/lxy5513/videopose/blob/master/common/arguments.py#L29  
+checkpoint/
 
 > by the way:
 you can change the model path to what you want

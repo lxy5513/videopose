@@ -25,6 +25,8 @@ args = parser.parse_known_args()
 params = dict()
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 params["model_folder"] = cur_dir + "/models/"
+params['tracking'] = 5
+params['number_people_max'] = 1
 #  import ipdb;ipdb.set_trace()
 
 
@@ -87,6 +89,14 @@ def generate_kpts(video_name):
 
     # pose processes
     result = np.array(kpt_results)
+
+    # save
+    name = '/home/xyliu/experiments/VideoPose3D/data/tmp.npz'
+    kpts = result.astype(np.float32)
+    print('kpts npz save in ', name)
+    np.savez_compressed(name, kpts=kpts)
+    return kpts
+
     return result
 
 
