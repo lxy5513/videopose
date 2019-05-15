@@ -97,7 +97,7 @@ def drawGaussian(img, pt, sigma):
     x = np.arange(0, size, 1, float)
     y = x[:, np.newaxis]
     x0 = y0 = size // 2
-    sigma = size / 4.0    
+    sigma = size / 4.0
     # The gaussian is not normalized, we want the center value to equal 1
     g = np.exp(- ((x - x0) ** 2 + (y - y0) ** 2) / (2 * sigma ** 2))
 
@@ -267,7 +267,7 @@ def cropBox(img, ul, br, resH, resW):
 def flip_v(x, cuda=True, volatile=True):
     x = flip(x.cpu().data)
     if cuda:
-        x = x.cuda(async=True)
+        x = x.cuda()
     x = torch.autograd.Variable(x, volatile=volatile)
     return x
 
@@ -312,7 +312,7 @@ def shuffleLR(x, dataset):
 def shuffleLR_v(x, dataset, cuda=False):
     x = shuffleLR(x.cpu().data, dataset)
     if cuda:
-        x = x.cuda(async=True)
+        x = x.cuda()
     x = torch.autograd.Variable(x)
     return x
 
