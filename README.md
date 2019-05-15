@@ -83,6 +83,7 @@ need download model
 其中hrnet依赖的pose model address: https://drive.google.com/drive/folders/1nzM_OBV9LbAEA7HClC0chEyf_7ECDXYA)
 yolov3 model download: `wget https://pjreddie.com/media/files/yolov3.weights`   
 
+
 videopose model address: https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243.bin
 
 
@@ -98,16 +99,10 @@ https://github.com/lxy5513/videopose/blob/master/doc/translate.md
 <br>
 
 ## commen problems
-1. model save location
+1. model download and save location
 ### hrnet
-> for hrnet model you can refer this:
-https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/pose_estimation/video.py#L79   
-joints_detectors/hrnet/models/pytorch/pose_coco/
-
-> for yolov3 model:
-you can refer this:
-https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/lib/detector/yolo/human_detector.py#L55   
-joints_detectors/hrnet/lib/detector/yolo/
+load [pose model]( https://dl.fbaipublicfiles.com/video-pose-3d/cpn-pt-243.bin) in  joints_detectors/hrnet/models/pytorch/pose_coco/    
+load yolov3 in joints_detectors/hrnet/lib/detector/yolo/
 
 
 ### alphapose 
@@ -115,11 +110,8 @@ load [yolov3](https://drive.google.com/file/d/1D47msNOOiJKvPOXlnpyzdKA3k6E97NTC/
 load [duc_se](https://drive.google.com/file/d/1OPORTWB2cwd5YTVBX-NE8fsauZJWsrtW/view)  joints_detectors/Alphapose/models/sppe/
 
 
-### videopose for all
+### videopose 
 > for videopose model:
 https://github.com/lxy5513/videopose/blob/master/common/arguments.py#L29  
 checkpoint/  
 
-
-> by the way:
-you can change the model path to what you want
