@@ -6,6 +6,8 @@
 <p align="center"><img src="outputs/op_dance.gif" width="70%" alt="" /></p>
 
 
+<p align="center"><img src="outputs/op_girl.gif" width="70%" alt="" /></p>
+
 
 ## envrionment configture
 I use torch1.0.1 in conda    
