@@ -6,15 +6,26 @@
 #
 
 import matplotlib
-matplotlib.use('Agg')
+#  matplotlib.use('Agg')
 
+import time
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, writers
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import subprocess as sp
 import ipdb; pdb=ipdb.set_trace
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import cv2
 
+# record time
+def ckpt_time(ckpt=None, display=0, desc=''):
+    if not ckpt:
+        return time.time()
+    else:
+        if display:
+            print(desc +' consume time {:0.4f}'.format(time.time() - float(ckpt)))
+        return time.time() - float(ckpt), time.time()
 
 def get_resolution(filename):
     command = ['ffprobe', '-v', 'error', '-select_streams', 'v:0',
@@ -229,3 +240,65 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
     else:
         raise ValueError('Unsupported output format (only .mp4 and .gif are supported)')
     plt.close()
+
+
+
+
+
+
+def render_animation_test(keypoints, poses, skeleton, fps, bitrate, azim, output, viewport,limit=-1, downsample=1, size=6, input_video_frame=None, input_video_skip=0, num=None):
+
+    t0 = ckpt_time()
+    fig = plt.figure(figsize=(12,6))
+    canvas = FigureCanvas(fig)
+    fig.add_subplot(121)
+    plt.imshow(input_video_frame)
+    # 3D
+    ax = fig.add_subplot(122, projection='3d')
+    ax.view_init(elev=15., azim=azim)
+    # set 长度范围
+    radius = 1.7
+    ax.set_xlim3d([-radius/2, radius/2])
+    ax.set_zlim3d([0, radius])
+    ax.set_ylim3d([-radius/2, radius/2])
+    ax.set_aspect('equal')
+    # 坐标轴刻度
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+    ax.set_zticklabels([])
+    ax.dist = 7.5
+
+    # lxy add
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+
+    # array([-1,  0,  1,  2,  0,  4,  5,  0,  7,  8,  9,  8, 11, 12,  8, 14, 15])
+    parents = skeleton.parents()
+
+    pos = poses['Reconstruction'][-1]
+    _, t1 = ckpt_time(t0, desc='1 ')
+    for j, j_parent in enumerate(parents):
+        if j_parent == -1:
+            continue
+
+        if len(parents) == keypoints.shape[1]:
+            color_pink = 'pink'
+            if j == 1 or j == 2:
+                color_pink = 'black'
+
+        col = 'red' if j in skeleton.joints_right() else 'black'
+            # 画图3D
+        ax.plot([pos[j, 0], pos[j_parent, 0]],
+                                    [pos[j, 1], pos[j_parent, 1]],
+                                    [pos[j, 2], pos[j_parent, 2]], zdir='z', c=col)
+
+    #  plt.savefig('test/3Dimage_{}.png'.format(1000+num))
+    width, height = fig.get_size_inches() * fig.get_dpi()
+    _, t2 = ckpt_time(t1, desc='2 ')
+    canvas.draw()       # draw the canvas, cache the renderer
+    image = np.fromstring(canvas.tostring_rgb(), dtype='uint8').reshape(int(height), int(width), 3)
+    cv2.imshow('im', image)
+    cv2.waitKey(5)
+    _, t3 = ckpt_time(t2, desc='3 ')
+    return image

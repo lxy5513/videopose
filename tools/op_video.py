@@ -54,9 +54,10 @@ def evaluate(test_generator, model_pos, action=None, return_predictions=False):
                 inputs_2d = inputs_2d.cuda()
 
             # Positional model
+            tx = ckpt_time()
             predicted_3d_pos = model_pos(inputs_2d)
+            print('consume time is ', ckpt_time(tx)[0])
 
-            # Test-time augmentation (if enabled)
             if test_generator.augment_enabled():
                 # Undo flipping and take average with non-flipped version
                 predicted_3d_pos[1, :, :, 0] *= -1
@@ -86,7 +87,7 @@ def main():
     # normlization keypoints  假设use the camera parameter
     keypoints = normalize_screen_coordinates(keypoints[..., :2], w=1000, h=1002)
 
-    model_pos = TemporalModel(17, 2, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
+    model_pos = TemporalModel(17, 2, 17,filter_widths=[3,3,3,3,3] , causal=args.causal, dropout=args.dropout, channels=args.channels,
                                 dense=args.dense)
 
     if torch.cuda.is_available():
@@ -106,7 +107,7 @@ def main():
     ckpt, time2 = ckpt_time(time1)
     print('------- load 3D model spends {:.2f} seconds'.format(ckpt))
 
-    #  Receptive field: 243 frames for args.arc [3, 3, 3, 3, 3]
+    #  Rceptive field: 243 frames for args.arc [3, 3, 3, 3, 3]
     receptive_field = model_pos.receptive_field()
     pad = (receptive_field - 1) // 2 # Padding on each side
     causal_shift = 0

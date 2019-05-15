@@ -95,9 +95,24 @@ def generate_kpts(video_name):
     kpts = result.astype(np.float32)
     print('kpts npz save in ', name)
     np.savez_compressed(name, kpts=kpts)
-    return kpts
-
     return result
+
+def generate_frame_kpt(frame, opWrapper):
+    '''
+    提供frame and model
+    '''
+    datum = op.Datum()
+    datum.cvInputData = frame
+    opWrapper.emplaceAndPop([datum])
+    re = datum.poseKeypoints
+    assert len(re) == 1, 'videopose3D only support one pserson restruction'
+    kpt = convert(re[0])
+
+    return kpt
+
+
+
+
 
 
 if __name__ == "__main__":

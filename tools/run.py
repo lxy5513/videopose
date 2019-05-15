@@ -1,22 +1,12 @@
-# Copyright (c) 2018-present, Facebook, Inc.
-# All rights reserved.
-#
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
-#
-
 import numpy as np
-
 from common.arguments import parse_args
 import torch
-
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import os
 import sys
 import errno
-
 from common.camera import *
 from common.model import *
 from common.loss import *
@@ -52,6 +42,7 @@ print('Preparing data...')
 3D dataset 中包含一系列2D关键点信息，还有摄像信息，是由原video经过2D检测器
 处理之后得到的， 通过它的信息，使用3D检查模型，来生成3D姿态。
 '''
+
 for subject in dataset.subjects():
     for action in dataset[subject].keys():
         anim = dataset[subject][action]
