@@ -1,15 +1,14 @@
 import torch
+#  import ipdb;ipdb.set_trace()
 from torch.autograd import Variable
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 
-import ipdb;pdb=ipdb.set_trace
 import torch.nn as nn
 import torch.utils.data
 import numpy as np
 import os
 import sys
-
 
 main_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(main_path)
@@ -25,7 +24,6 @@ from tqdm import tqdm
 import time
 from fn import getTime
 import cv2
-
 
 from pPose_nms import pose_nms, write_json
 
@@ -135,7 +133,7 @@ def handle_video(videofile):
             print('error...')
 
     filename = os.path.basename(args.video).split('.')[0]
-    name = '/home/xyliu/experiments/VideoPose3D/data/'+filename + '.npz'
+    name = filename + '.npz'
     kpts = np.array(kpts).astype(np.float32)
     print('kpts npz save in ', name)
     np.savez_compressed(name, kpts=kpts)

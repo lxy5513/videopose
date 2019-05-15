@@ -1,4 +1,4 @@
-name: torch
+name: torch_tmp
 channels:
   - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
   - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
@@ -98,5 +98,5 @@ dependencies:
     - typing==3.6.6
     - typing-extensions==3.7.2
     - yacs==0.1.6
-prefix: /home/xyliu/miniconda3/envs/torch
+prefix: /home/xyliu/miniconda3/envs/torch_tmp
 

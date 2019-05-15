@@ -59,8 +59,10 @@ class InferenNet_fast(nn.Module):
         super(InferenNet_fast, self).__init__()
 
         model = createModel().cuda()
-        print('Loading pose model from {}'.format(os.getcwd()+ '/Alphapose/models/sppe/duc_se.pth'))
-        model.load_state_dict(torch.load(os.getcwd()+ '/Alphapose/models/sppe/duc_se.pth'))
+        path_mian = os.path.dirname(os.path.abspath(__file__)) + '/../..'
+        model_path = path_mian + '/models/sppe/duc_se.pth'
+        print('Loading pose model from {}'.format(model_path))
+        model.load_state_dict(torch.load(model_path))
         model.eval()
         self.pyranet = model
 
