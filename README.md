@@ -48,9 +48,14 @@ add hrnet 2D keypoints detection module, to realize the end to end 3D reconstruc
 <br> 
 
 ## handle video by alphapose
-`python tools/alphapose_video.py --viz-output output.mp4 --viz-video /path/to/video.mp4`
+`python tools/alphapose_video.py --viz-output output.mp4 --viz-video /path/to/video.mp4`   
 or
-`python tools/aphapose_video.py --viz-output output.gif --viz-video /path/to/video.mp4 --viz-limit 180`
+`python tools/aphapose_video.py --viz-output output.gif --viz-video /path/to/video.mp4 --viz-limit 180`   
+need download model 
+
+
+
+
 
 <br> 
 <br>
@@ -94,7 +99,7 @@ https://github.com/lxy5513/videopose/blob/master/doc/translate.md
 
 ## commen problems
 1. model save location
-
+### hrnet
 > for hrnet model you can refer this:
 https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/pose_estimation/video.py#L79   
 joints_detectors/hrnet/models/pytorch/pose_coco/
@@ -104,9 +109,17 @@ you can refer this:
 https://github.com/lxy5513/videopose/blob/master/joints_detectors/hrnet/lib/detector/yolo/human_detector.py#L55   
 joints_detectors/hrnet/lib/detector/yolo/
 
+
+### alphapose 
+load [yolov3](https://drive.google.com/file/d/1D47msNOOiJKvPOXlnpyzdKA3k6E97NTC/view) in joints_detectors/Alphapose/models/yolo/    
+load [duc_se](https://drive.google.com/file/d/1OPORTWB2cwd5YTVBX-NE8fsauZJWsrtW/view)  joints_detectors/Alphapose/models/sppe/
+
+
+### videopose for all
 > for videopose model:
 https://github.com/lxy5513/videopose/blob/master/common/arguments.py#L29  
-checkpoint/
+checkpoint/  
+
 
 > by the way:
 you can change the model path to what you want
