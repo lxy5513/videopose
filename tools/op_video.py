@@ -1,7 +1,6 @@
 '''
 通过实现高精度的端到端3D姿态重建
 '''
-
 import os
 import sys
 path = os.path.split(os.path.realpath(__file__))[0]

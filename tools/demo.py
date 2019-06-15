@@ -1,139 +1,48 @@
-import numpy as np
-import ipdb;pdb = ipdb.set_trace
-from common.arguments import parse_args
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
 import os
-import sys
-import errno
-from common.camera import *
-from common.model import *
-from common.loss import *
-from common.generators import ChunkedGenerator, UnchunkedGenerator
-import time
-metadata={'layout_name': 'coco','num_joints': 17,'keypoints_symmetry': [[1, 3, 5, 7, 9, 11, 13, 15],[2, 4, 6, 8, 10, 12, 14, 16]]}
+import cv2
+from tqdm import tqdm
+import numpy as np
+from argparse import ArgumentParser
 
-# record time
-def ckpt_time(ckpt=None):
-    if not ckpt:
-        return time.time()
-    else:
-        return time.time() - float(ckpt), time.time()
+from joints_detectors.openpose.main import load_model as Model2Dload
+model2D = Model2Dload()
+from joints_detectors.openpose.main import generate_frame_kpt as OpenPoseInterface
+interface2D = OpenPoseInterface
+from tools.utils import videopose_model_load as Model3Dload
+model3D = Model3Dload()
+from tools.utils import interface as VideoPoseInterface
+interface3D = VideoPoseInterface
+from tools.utils import draw_3Dimg, draw_2Dimg, videoInfo, resize_img
 
-args = parse_args()
-print(args)
+def main(VideoName):
+    cap, cap_length = videoInfo(VideoName)
+    kpt2Ds = []
+    for i in tqdm(range(cap_length)):
+        _, frame = cap.read()
+        frame, W, H = resize_img(frame)
 
-time0 = ckpt_time()
-# 2D kpts loads
-if not args.input_npz:
-    print('load data/taiji.npz')
-    npz = np.load('/home/xyliu/experiments/openpose/outputs/track/dance/kpts.npz')
-else:
-    npz = np.load(args.input_npz)
+        try:
+            joint2D = interface2D(frame, model2D)
+        except Exception as e:
+            print(e)
+            continue
 
-keypoints = npz['kpts']
+        if i == 0:
+            for _ in range(30):
+                kpt2Ds.append(joint2D)
 
+        else:
+            kpt2Ds.append(joint2D)
 
-keypoints_symmetry = metadata['keypoints_symmetry']
-kps_left, kps_right = list(keypoints_symmetry[0]), list(keypoints_symmetry[1])
-joints_left, joints_right = list([4, 5, 6, 11, 12, 13]), list([1, 2, 3, 14, 15, 16])
+        joint3D = interface3D(model3D, np.array(kpt2Ds), W, H)
+        joint3D_item = joint3D[-1] #(17, 3)
+        draw_3Dimg(joint3D_item, frame, display=1, kpt2D=joint2D)
 
-# normlization keypoints  假设use the camera parameter
-keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=1000, h=1002)
-
-model_pos = TemporalModel(17, 2, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
-                            dense=args.dense)
-if torch.cuda.is_available():
-    model_pos = model_pos.cuda()
-
-ckpt, time1 = ckpt_time(time0)
-print('------- load data spends {:.2f} seconds'.format(ckpt))
-
-
-# load trained model
-chk_filename = os.path.join(args.checkpoint, args.resume if args.resume else args.evaluate)
-print('Loading checkpoint', chk_filename)
-checkpoint = torch.load(chk_filename, map_location=lambda storage, loc: storage)# 把loc映射到storage
-model_pos.load_state_dict(checkpoint['model_pos'])
-
-
-ckpt, time2 = ckpt_time(time1)
-print('------- load 3D model spends {:.2f} seconds'.format(ckpt))
-
-#  Receptive field: 243 frames for args.arc [3, 3, 3, 3, 3]
-receptive_field = model_pos.receptive_field()
-pad = (receptive_field - 1) // 2 # Padding on each side
-causal_shift = 0
-
-def evaluate(test_generator, action=None, return_predictions=False):
-    with torch.no_grad():
-        model_pos.eval()
-        N = 0
-        for _, batch, batch_2d in test_generator.next_epoch():
-
-            inputs_2d = torch.from_numpy(batch_2d.astype('float32'))
-            if torch.cuda.is_available():
-                inputs_2d = inputs_2d.cuda()
-
-            # Positional model
-            predicted_3d_pos = model_pos(inputs_2d)
-
-            # Test-time augmentation (if enabled)
-            if test_generator.augment_enabled():
-                # Undo flipping and take average with non-flipped version
-                predicted_3d_pos[1, :, :, 0] *= -1
-                predicted_3d_pos[1, :, joints_left + joints_right] = predicted_3d_pos[1, :, joints_right + joints_left]
-                predicted_3d_pos = torch.mean(predicted_3d_pos, dim=0, keepdim=True)
-
-            if return_predictions:
-                return predicted_3d_pos.squeeze(0).cpu().numpy()
-
-
-
-print('Rendering...')
-input_keypoints = keypoints.copy()
-gen = UnchunkedGenerator(None, None, [input_keypoints],
-                            pad=pad, causal_shift=causal_shift, augment=args.test_time_augmentation,
-                            kps_left=kps_left, kps_right=kps_right, joints_left=joints_left, joints_right=joints_right)
-prediction = evaluate(gen, return_predictions=True)
-
-class skeleton():
-    def parents(self):
-        return np.array([-1,  0,  1,  2,  0,  4,  5,  0,  7,  8,  9,  8, 11, 12,  8, 14, 15])
-    def joints_right(self):
-        return [1, 2, 3, 9, 10]
-
-rot = np.array([ 0.14070565, -0.15007018, -0.7552408 ,  0.62232804], dtype=np.float32)
-prediction = camera_to_world(prediction, R=rot, t=0)
-
-# We don't have the trajectory, but at least we can rebase the height
-prediction[:, :, 2] -= np.min(prediction[:, :, 2])
-anim_output = {'Reconstruction': prediction}
-
-input_keypoints = image_coordinates(input_keypoints[..., :2], w=1000, h=1002)
-
-
-ckpt, time3 = ckpt_time(time2)
-print('------- generate reconstruction 3D data spends {:.2f} seconds'.format(ckpt))
-
-
-if not args.viz_output:
-    args.viz_output = 'xxxx.gif'
-    
-# args.viz_limit = 100
-
-from common.visualization import render_animation
-render_animation(input_keypoints, anim_output,
-                    skeleton(), 25, args.viz_bitrate, np.array(70., dtype=np.float32), args.viz_output,
-                    limit=args.viz_limit, downsample=args.viz_downsample, size=args.viz_size,
-                    input_video_path=args.viz_video, viewport=(1000, 1002),
-                    input_video_skip=args.viz_skip)
-
-ckpt, time4 = ckpt_time(time3)
-print('------- generaye video spends {:.2f} seconds'.format(ckpt))
-
-ckpt, _ = ckpt_time(time0)
-print(' =================== total spends {:.2f} seconds'.format(ckpt))
+if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument("-video", "--video_input", help="input video file name", default="/home/xyliu/Videos/sports/dance.mp4")
+    args = parser.parse_args()
+    VideoName = args.video_input
+    print('Input Video Name is ', VideoName)
+    main(VideoName)
 
