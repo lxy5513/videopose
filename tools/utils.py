@@ -165,8 +165,9 @@ def interface(model_pos, keypoints, W, H):
     if not isinstance(keypoints, np.ndarray):
         keypoints = np.array(keypoints)
 
-    from common.camera import normalize_screen_coordinates_new, camera_to_world
-    keypoints = normalize_screen_coordinates_new(keypoints[..., :2], w=W, h=H)
+    from common.camera import normalize_screen_coordinates_new, camera_to_world, normalize_screen_coordinates
+    #  keypoints = normalize_screen_coordinates_new(keypoints[..., :2], w=W, h=H)
+    keypoints = normalize_screen_coordinates(keypoints[..., :2], w=1000, h=1002)
     input_keypoints = keypoints.copy()
     # test_time_augmentation True
     from common.generators import UnchunkedGenerator

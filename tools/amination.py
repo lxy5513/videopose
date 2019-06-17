@@ -30,6 +30,7 @@ from tools.utils import draw_3Dimg, draw_2Dimg, videoInfo, resize_img, common
 
 common = common()
 item = 0
+item_num = 0
 pos_init = np.zeros(shape=(17,3))
 class Visualizer(object):
     def __init__(self, input_video):
@@ -59,7 +60,7 @@ class Visualizer(object):
 
         # special setting
         self.cap = cv2.VideoCapture(input_video)
-        self.video_name = input_video
+        self.video_name = input_video.split('/')[-1].split('.')[0]
         self.kpt2Ds = []
         pos = pos_init
 
@@ -86,46 +87,67 @@ class Visualizer(object):
 
 
     def update(self):
-        time.sleep(0.04)
         global item
-        num = item/5
+        global item_num
+        num = item/2
         azimuth_value = abs(num%120 + math.pow(-1, int((num/120))) * 120) % 120
         self.w.opts['azimuth'] = azimuth_value
         print(item, '  ')
-
-
-
         _, frame = self.cap.read()
-        frame, W, H = resize_img(frame)
-        joint2D = interface2D(frame, model2D)
-        draw_2Dimg(frame, joint2D, 1)
-        if item == 0:
-            for _ in range(30):
+        if item % 2 != 1:
+            frame, W, H = resize_img(frame)
+            joint2D = interface2D(frame, model2D)
+            img2D  = draw_2Dimg(frame, joint2D, 1)
+            if item == 0:
+                for _ in range(30):
+                    self.kpt2Ds.append(joint2D)
+            elif item < 30:
                 self.kpt2Ds.append(joint2D)
-        elif item < 30:
-            self.kpt2Ds.append(joint2D)
-            self.kpt2Ds.pop(0)
+                self.kpt2Ds.pop(0)
+            else:
+                self.kpt2Ds.append(joint2D)
+                self.kpt2Ds.pop(0)
+
+            item += 1
+            joint3D = interface3D(model3D, np.array(self.kpt2Ds), W, H)
+            pos = joint3D[-1] #(17, 3)
+
+            for j, j_parent in enumerate(common.skeleton_parents):
+                if j_parent == -1:
+                    continue
+                x = np.array([pos[j, 0], pos[j_parent, 0]]) * 10
+                y = np.array([pos[j, 1], pos[j_parent, 1]]) * 10
+                z = np.array([pos[j, 2], pos[j_parent, 2]]) * 10 - 10
+                pos_total = np.vstack([x,y,z]).transpose()
+                self.set_plotdata(
+                    name=j, points=pos_total,
+                    color=pg.glColor((j, 10)),
+                    width=6)
+
+            # save
+            if item_num < 10:
+                name = '000' + str(item_num)
+
+            elif item_num < 100:
+                name = '00' + str(item_num)
+
+            elif item_num < 1000:
+                name = '0' + str(item_num)
+
+            else:
+                name = str(item_num)
+            im3Dname = 'VideoSave/' + '3D_'+ name + '.png'
+            d = self.w.renderToArray((img2D.shape[1], img2D.shape[0]))#(W, H)
+            print('Save 3D image: ', im3Dname)
+            pg.makeQImage(d).save(im3Dname)
+
+            im2Dname = 'VideoSave/' + '2D_'+ name + '.png'
+            print('Save 2D image: ', im2Dname)
+            cv2.imwrite(im2Dname, img2D)
+
+            item_num += 1
         else:
-            self.kpt2Ds.append(joint2D)
-
-
-        item += 1
-        joint3D = interface3D(model3D, np.array(self.kpt2Ds), W, H)
-        pos = joint3D[-1] #(17, 3)
-
-        for j, j_parent in enumerate(common.skeleton_parents):
-            if j_parent == -1:
-                continue
-            x = np.array([pos[j, 0], pos[j_parent, 0]]) * 10
-            y = np.array([pos[j, 1], pos[j_parent, 1]]) * 10
-            z = np.array([pos[j, 2], pos[j_parent, 2]]) * 10 - 10
-            pos_total = np.vstack([x,y,z]).transpose()
-            self.set_plotdata(
-                name=j, points=pos_total,
-                color=pg.glColor((j, 10)),
-                width=6)
-
-
+            item += 1
     def animation(self):
         timer = QtCore.QTimer()
         timer.timeout.connect(self.update)
@@ -134,10 +156,10 @@ class Visualizer(object):
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("-video", "--input_video", help="input video file name", default="/home/xyliu/Videos/sports/dance.mp4")
+    parser.add_argument("-i", "--video", help="input video file name", default="/home/xyliu/Videos/sports/dance.mp4")
     args = parser.parse_args()
-    print(args.input_video)
-    v = Visualizer(args.input_video)
+    print(args.video)
+    v = Visualizer(args.video)
     v.animation()
     cv2.destroyAllWindows()
 

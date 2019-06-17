@@ -103,7 +103,7 @@ class Visualizer(object):
 
 
     def update(self):
-        time.sleep(0.08)
+        time.sleep(0.03)
         global item
         pos = self.skeletons_3d[item]
         print(item, '  ')

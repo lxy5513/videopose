@@ -30,7 +30,9 @@ def main(VideoName):
         if i == 0:
             for _ in range(30):
                 kpt2Ds.append(joint2D)
-
+        elif i < 30:
+            kpt2Ds.append(joint2D)
+            kpt2Ds.pop(0)
         else:
             kpt2Ds.append(joint2D)
 
