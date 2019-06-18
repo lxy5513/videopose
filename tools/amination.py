@@ -2,8 +2,6 @@
 Realtime Display 3D Human Reconstrction
 3D image drawing by pygtagrph based on OpenGL
 speed about 25 FPS
-
-VideoPose 每次处理 30 帧
 '''
 import os
 import sys

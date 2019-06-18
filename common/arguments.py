@@ -54,8 +54,7 @@ def parse_args():
     parser.add_argument('--dense', action='store_true', help='use dense convolutions instead of dilated convolutions')
     parser.add_argument('--disable-optimizations', action='store_true', help='disable optimized model for single-frame predictions')
     parser.add_argument('--linear-projection', action='store_true', help='use only linear coefficients for semi-supervised projection')
-    parser.add_argument('--no-bone-length', action='store_false', dest='bone_length_term',
-                        help='disable bone length term in semi-supervised settings')
+    parser.add_argument('--no-bone-length', action='store_false', dest='bone_length_term', help='disable bone length term in semi-supervised settings')
     parser.add_argument('--no-proj', action='store_true', help='disable projection for semi-supervised setting')
 
     # Visualization
@@ -72,6 +71,8 @@ def parse_args():
     parser.add_argument('--viz-size', type=int, default=5, metavar='N', help='image size')
     # self add
     parser.add_argument('--input-npz',dest='input_npz', type=str, default='', help='input 2d numpy file')
+    parser.add_argument('--video',dest='input_video', type=str, default='', help='input video name')
+
 
     parser.set_defaults(bone_length_term=True)
     parser.set_defaults(data_augmentation=True)

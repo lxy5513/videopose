@@ -85,7 +85,10 @@ def model_load(config):
         new_state_dict[name] = v
     model.load_state_dict(new_state_dict)
     model.eval()
+
     return model
+
+
 
 def ckpt_time(t0=None, display=None):
     if not t0:
@@ -100,7 +103,7 @@ def ckpt_time(t0=None, display=None):
 ###### LOAD human detecotor model
 human_model = yolo_model()
 
-def generate_kpts(video_name):
+def generate_kpts(video_name, smooth=None):
     args = get_args()
     update_config(cfg, args)
     cam = cv2.VideoCapture(video_name)
@@ -137,8 +140,9 @@ def generate_kpts(video_name):
             preds, maxvals = get_final_preds(
                 cfg, output.clone().cpu().numpy(), np.asarray(center), np.asarray(scale))
 
-        # smooth and fine-tune coordinates
-        preds = smooth_filter(preds)
+        if smooth:
+            # smooth and fine-tune coordinates
+            preds = smooth_filter(preds)
 
         # 3D video pose (only support single human)
         kpts_result.append(preds[0])
@@ -146,6 +150,35 @@ def generate_kpts(video_name):
     result = np.array(kpts_result)
     return result
 
+def getTwoModel():
+    #### load pose-hrnet MODEL
+    pose_model = model_load(cfg)
+    pose_model.cuda()
+
+    # load YoloV3 Model
+    bbox_model = yolo_model()
+
+    return bbox_model, pose_model
+
+
+def getKptsFromImage(human_model, pose_model, image, smooth=None):
+    args = get_args()
+    update_config(cfg, args)
+
+    bboxs, scores = yolo_det(input_image, human_model)
+    # bbox is coordinate location
+    inputs, origin_img, center, scale = PreProcess(input_image, bboxs, scores, cfg)
+
+    with torch.no_grad():
+        # compute output heatmap
+        inputs = inputs[:,[2,1,0]]
+        output = pose_model(inputs.cuda())
+        # compute coordinate
+        preds, maxvals = get_final_preds(
+            cfg, output.clone().cpu().numpy(), np.asarray(center), np.asarray(scale))
+
+    # 3D video pose (only support single human)
+    return preds[0]
 
 if __name__ == '__main__':
     main()

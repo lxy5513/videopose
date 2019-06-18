@@ -143,7 +143,7 @@ def main():
 
     ckpt, time4 = ckpt_time(time3)
     print('total spend {:2f} second'.format(ckpt))
-    openVideoCommand='video outputs/op_result.mp4'
+    openVideoCommand="xdg-open " + args.viz_output
     os.system(openVideoCommand)
 if __name__ == '__main__':
     main()

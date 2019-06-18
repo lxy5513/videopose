@@ -37,8 +37,6 @@ def plot_keypoint(image, keypoints, keypoint_thresh=0.1):
     return image
 
 
-
-
 # convert openpose keypoints(25) format to coco keypoints(17) format
 def convert(op_kpts):
     '''
@@ -46,6 +44,22 @@ def convert(op_kpts):
     '''
     coco_kpts = []
     for i, j in enumerate([0,16,15,18,17,5,2,6,3,7,4,12,9,13,10,14,11]):
-        coco_kpts.append(op_kpts[j])
+        score = op_kpts[j][-1]
+        # if eye, ear keypoints score is lower, map it to mouth
+        if score < 0.2 and j in [15, 16, 17, 18]:
+            coco_kpts.append(op_kpts[0])
+        else:
+            coco_kpts.append(op_kpts[j])
+
     return coco_kpts
 
+
+# convert openpose keypoints(25) format to keypoints(18) format
+def convert_18(op_kpts):
+    coco_kpts = []
+    for i, j in enumerate(range(0, 18)):
+        if i<8:
+            coco_kpts.append(op_kpts[j])
+        else:
+            coco_kpts.append(op_kpts[j+1])
+    return coco_kpts

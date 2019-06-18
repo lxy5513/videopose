@@ -245,7 +245,6 @@ def render_animation(keypoints, poses, skeleton, fps, bitrate, azim, output, vie
 
 
 
-
 def render_animation_test(keypoints, poses, skeleton, fps, bitrate, azim, output, viewport,limit=-1, downsample=1, size=6, input_video_frame=None, input_video_skip=0, num=None):
 
     t0 = ckpt_time()

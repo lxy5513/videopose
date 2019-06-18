@@ -3,7 +3,7 @@ import cv2
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, dir_path)
-
+import ipdb;pdb=ipdb.set_trace
 import argparse
 from tqdm import tqdm
 from utils import convert
@@ -27,11 +27,12 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 params["model_folder"] = cur_dir + "/models/"
 params['tracking'] = 5
 params['number_people_max'] = 1
+#  params['num_gpu'] = 1
+#  params['num_gpu_start'] = 1
 #  import ipdb;ipdb.set_trace()
 
 
 def load_model():
-
     try:
         opWrapper = op.WrapperPython()
         opWrapper.configure(params)
@@ -80,8 +81,8 @@ def generate_kpts(video_name):
             opWrapper.emplaceAndPop([datum])
             results = datum.poseKeypoints
 
-            #25 to 17
             assert len(results) == 1, 'videopose3D only support one pserson restruction'
+            #25 to 17
             kpts = convert(results[0])
             kpt_results.append(kpts)
         except Exception as e:
@@ -90,11 +91,11 @@ def generate_kpts(video_name):
     # pose processes
     result = np.array(kpt_results)
 
-    # save
-    name = '/home/xyliu/experiments/VideoPose3D/data/tmp.npz'
-    kpts = result.astype(np.float32)
-    print('kpts npz save in ', name)
-    np.savez_compressed(name, kpts=kpts)
+    #  # save
+    #  name = '/home/xyliu/experiments/VideoPose3D/data/tmp.npz'
+    #  kpts = result.astype(np.float32)
+    #  print('kpts npz save in ', name)
+    #  np.savez_compressed(name, kpts=kpts)
     return result
 
 def generate_frame_kpt(frame, opWrapper):
@@ -109,11 +110,6 @@ def generate_frame_kpt(frame, opWrapper):
     kpt = convert(re[0])
 
     return kpt
-
-
-
-
-
 
 if __name__ == "__main__":
     generate_kpts(os.environ.get('VIDEO_PATH') + 'dance.mp4')

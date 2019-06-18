@@ -17,6 +17,16 @@ def normalize_screen_coordinates(X, w, h):
     # Normalize so that [0, w] is mapped to [-1, 1], while preserving the aspect ratio
     return X/w*2 - [1, h/w]
 
+def normalize_screen_coordinates_new(X, w, h):
+    assert X.shape[-1] == 2
+
+    return (X -(w/2, h/2) ) / (w/2, h/2)
+
+def image_coordinates_new(X, w, h):
+    assert X.shape[-1] == 2
+
+    # Reverse camera frame normalization
+    return (X * (w/2, h/2)) + (w/2, h/2)
 
 def image_coordinates(X, w, h):
     assert X.shape[-1] == 2

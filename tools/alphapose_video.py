@@ -130,7 +130,7 @@ def main():
 
 
     if not args.viz_output:
-        args.viz_output = 'result.mp4'
+        args.viz_output = 'outputs/alpha_result.mp4'
 
     from common.visualization import render_animation
     render_animation(input_keypoints, anim_output,
@@ -140,6 +140,9 @@ def main():
                         input_video_skip=args.viz_skip)
 
     ckpt, time4 = ckpt_time(time3)
+    pdb()
+    openVideoCommand="xdg-open " + args.viz_output
+    os.system(openVideoCommand)
     print('total spend {:2f} second'.format(ckpt))
 if __name__ == '__main__':
     main()

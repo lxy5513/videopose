@@ -33,6 +33,13 @@ if not args.sp:
     torch.multiprocessing.set_start_method('forkserver', force=True)
     torch.multiprocessing.set_sharing_strategy('file_system')
 
+
+def model_load():
+    return model
+
+def image_interface(model, image):
+
+
 def handle_video(videofile):
     args.video = videofile
     videofile = args.video
