@@ -28,7 +28,7 @@ I use torch1.0.1 in conda
 
 <br>
 
-## RealTime Demo
+## RealTime WebCam Demo
 
 https://github.com/lxy5513/videopose/blob/master/outputs/README.md
 
