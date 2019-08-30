@@ -101,9 +101,11 @@ def ckpt_time(t0=None, display=None):
 
 
 ###### LOAD human detecotor model
-human_model = yolo_model()
+args = get_args()
+update_config(cfg, args)
 
 def generate_kpts(video_name, smooth=None):
+    human_model = yolo_model()
     args = get_args()
     update_config(cfg, args)
     cam = cv2.VideoCapture(video_name)
@@ -151,6 +153,8 @@ def generate_kpts(video_name, smooth=None):
     return result
 
 def getTwoModel():
+    #  args = get_args()
+    #  update_config(cfg, args)
     #### load pose-hrnet MODEL
     pose_model = model_load(cfg)
     pose_model.cuda()
@@ -162,12 +166,10 @@ def getTwoModel():
 
 
 def getKptsFromImage(human_model, pose_model, image, smooth=None):
-    args = get_args()
-    update_config(cfg, args)
 
-    bboxs, scores = yolo_det(input_image, human_model)
+    bboxs, scores = yolo_det(image, human_model)
     # bbox is coordinate location
-    inputs, origin_img, center, scale = PreProcess(input_image, bboxs, scores, cfg)
+    inputs, origin_img, center, scale = PreProcess(image, bboxs, scores, cfg)
 
     with torch.no_grad():
         # compute output heatmap
@@ -178,7 +180,8 @@ def getKptsFromImage(human_model, pose_model, image, smooth=None):
             cfg, output.clone().cpu().numpy(), np.asarray(center), np.asarray(scale))
 
     # 3D video pose (only support single human)
-    return preds[0]
+    result = np.concatenate((preds[0], maxvals[0]), 1)
+    return result
 
 if __name__ == '__main__':
     main()

@@ -23,6 +23,7 @@ class common():
                 [11, 13], [12, 14], [13, 15], [14, 16]]
 
 
+
 def resize_img(frame, max_length=640):
     H, W = frame.shape[:2]
     if max(W, H) > max_length:
@@ -84,7 +85,7 @@ def draw_3Dimg(pos, image, display=None, kpt2D=None):
 
     # 2D
     fig.add_subplot(121)
-    if kpt2D:
+    if isinstance(kpt2D, np.ndarray):
         plt.imshow(draw_2Dimg(image, kpt2D))
     else:
         plt.imshow(image)
