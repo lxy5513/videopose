@@ -41,7 +41,7 @@ https://github.com/lxy5513/videopose/blob/master/outputs/README.md
 cd joints_detectors/hrnet/lib/
 make
 cd -
-python tools/hrnet_video.py --viz-video /path/to/video.mp4
+python tools/hrnet_realtime.py -video /path/to/video.mp4
 ```
 
 add hrnet 2D keypoints detection module, to realize the end to end 3D reconstruction
