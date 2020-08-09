@@ -1,0 +1,3 @@
+[submodule "joints_detectors/posenet"]
+	path = joints_detectors/posenet
+	url = https://github.com/StanfordHCI/posenet-pytorch.git
